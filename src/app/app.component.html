@@ -62,7 +62,7 @@
         <div>
           <canvas width="450" height="300" id="temperatures-graph" #temperaturesGraph></canvas>
           
-            <div class="clr-form-control">
+            <div *ngIf="temperatures && temperatures.B" class="clr-form-control">
               <label for="bed-target" class="clr-control-label">Bed Target Temp</label>
               <div class="clr-control-container clr-error">
                 <div class="clr-input-wrapper">
@@ -74,7 +74,7 @@
               </div>
             </div>
 
-            <div class="clr-form-control">
+            <div *ngIf="temperatures && temperatures.T" class="clr-form-control">
               <label for="tool-target" class="clr-control-label">Tool Target Temp</label>
               <div class="clr-control-container clr-error">
                 <div class="clr-input-wrapper">
@@ -86,7 +86,7 @@
               </div>
             </div>
           
-            <button class="btn btn-primary" (click)="setTargetTemperatures()">Set</button>
+            <button *ngIf="temperatures && temperatures.T" class="btn btn-primary" (click)="setTargetTemperatures()">Set</button>
         </div>
       </div>
 
