@@ -7,6 +7,7 @@ import {GLView} from "../webgl/GLView";
 import {PrinterView} from "../webgl/PrinterView";
 import {StlmodelService} from "../webgl/stlmodel.service";
 import {ClrWizardPage} from "@clr/angular";
+import { ModalService } from '../modal.service';
 
 @Component({
   selector: 'modal-addprinter',
@@ -26,8 +27,8 @@ export class AddprinterComponent extends Modal implements OnInit {
   @ViewChild('printerPreview') printerPreview: ElementRef;
   printerView: PrinterView;
 
-  constructor(private printService: PrintService, private stlLoader: StlmodelService, fb: FormBuilder) {
-      super();
+  constructor(private printService: PrintService, private stlLoader: StlmodelService, modalService: ModalService, fb: FormBuilder) {
+      super(modalService);
 
       this.formPageOne = fb.group({
           "selectedDevice": null,

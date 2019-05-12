@@ -15,6 +15,10 @@ import {WebsocketService} from "./websocket.service";
 import { PrintJobComponent } from './print-job/print-job.component';
 import { FileManagerComponent } from './file-manager/file-manager.component';
 import { TemperaturesComponent } from './temperatures/temperatures.component';
+import { UploadProgressComponent } from './upload-progress/upload-progress.component';
+import { FileSizePipe } from './file-size.pipe';
+import { ErrorPopupComponent } from './error-popup/error-popup.component';
+import { GcodeFilePreviewComponent } from './gcode-file-preview/gcode-file-preview.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +26,11 @@ import { TemperaturesComponent } from './temperatures/temperatures.component';
     AddprinterComponent,
     PrintJobComponent,
     FileManagerComponent,
-    TemperaturesComponent
+    TemperaturesComponent,
+    UploadProgressComponent,
+    FileSizePipe,
+    ErrorPopupComponent,
+    GcodeFilePreviewComponent
   ],
   imports: [
     BrowserModule,
@@ -36,6 +44,8 @@ import { TemperaturesComponent } from './temperatures/temperatures.component';
   bootstrap: [AppComponent],
   entryComponents: [
     AddprinterComponent,
+    UploadProgressComponent,
+    ErrorPopupComponent
   ],
 })
 export class AppModule { }

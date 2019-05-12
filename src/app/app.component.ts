@@ -7,6 +7,9 @@ import {WebsocketService} from "./websocket.service";
 import {Subscription} from "rxjs/Subscription";
 import { FileService } from './file.service';
 import { HttpEventType } from '@angular/common/http';
+import { UploadProgressComponent } from './upload-progress/upload-progress.component';
+import { FileManagerComponent } from './file-manager/file-manager.component';
+import { ErrorPopupComponent } from './error-popup/error-popup.component';
 
 @Component({
   selector: 'app-root',
@@ -27,6 +30,8 @@ export class AppComponent implements OnInit {
   @ViewChild('modals', {
     read: ViewContainerRef
   }) viewContainerRef: ViewContainerRef;
+
+  @ViewChild("fileManagerComponent") fileManagerComponent: FileManagerComponent;
 
   constructor(private printService: PrintService, private modalService: ModalService, private websocketService: WebsocketService, private fileService: FileService) {
   }
@@ -105,31 +110,50 @@ export class AppComponent implements OnInit {
         return;
     }
 
-    // TODO: Show overlay with progress
+    // Show overlay with progress
+    let uploadProgress = <UploadProgressComponent> this.modalService.showModal(UploadProgressComponent);
+    uploadProgress.total = file.size;
+    uploadProgress.done = 0;
+
     this.fileService.uploadFile(file).subscribe(event => {
       switch(event.type) {
         case HttpEventType.Response:
-        // Upload done
-        // TODO: Hide progress overlay
-        // TODO: reload file list
-        // TODO: If no print job is running, ask for starting the print
-        if (event.ok) {
-          const loc = event.headers.get('location');
-          console.debug("File uploaded as: " + loc);
-        } else {
-          console.error("Upload failed: " + event.statusText);
-        }
-        break;
+          // Upload done
+          // Hide progress overlay
+          uploadProgress.hide();
+
+          if (event.ok) {
+            const loc = event.headers.get('location');
+            console.debug("File uploaded as: " + loc);
+
+            // reload file list
+            this.fileManagerComponent.reload();
+
+            // TODO: If no print job is running, ask for starting the print
+          } else {
+            console.error("Upload failed: " + event.statusText);
+
+            let errorText = (event.body) ? event.body : event.statusText;
+            this.showErrorMessage(errorText);
+          }
+
+          break;
 
         case HttpEventType.UploadProgress:
-        // TODO: Update progress
-        const percentDone = Math.round(100 * event.loaded / event.total);
-        console.debug("File progress: " + percentDone);
+          // Update progress
+          const percentDone = Math.round(100 * event.loaded / event.total);
+          console.debug("File progress: " + percentDone);
+          uploadProgress.done = event.loaded;
 
-        break;
+          break;
       }
     });
     
+  }
+
+  private showErrorMessage(text: string) {
+    let modal = <ErrorPopupComponent> this.modalService.showModal(ErrorPopupComponent);
+    modal.message = text;
   }
 
   onDragEnter(event: DragEvent) {
@@ -156,5 +180,6 @@ export class AppComponent implements OnInit {
 
   editPrinter(printer: Printer) {
     // TODO
+    this.showErrorMessage("Not implemented :-(");
   }
 }

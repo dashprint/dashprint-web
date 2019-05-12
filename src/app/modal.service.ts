@@ -21,14 +21,19 @@ export class ModalService {
     this.rootViewContainer = viewContainerRef;
   }
 
-  showModal(componentName): Modal {
+  public showModal(componentName): Modal {
     const factory = this.factoryResolver.resolveComponentFactory(componentName);
     const component: ComponentRef<Modal> = factory.create(this.rootViewContainer.parentInjector) as ComponentRef<Modal>;
+    this.rootViewContainer.clear();
     this.rootViewContainer.insert(component.hostView);
 
     component.instance.show();
 
     return component.instance;
+  }
+
+  public hideModal() {
+    this.rootViewContainer.clear();
   }
 
 }

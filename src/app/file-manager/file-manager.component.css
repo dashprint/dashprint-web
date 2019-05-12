@@ -1,0 +1,20 @@
+.file-list li {
+	list-style-type: none;
+}
+
+.file {
+	display: flex;
+	justify-content: space-between;
+}
+
+.file:hover {
+	background-color: #eee;
+}
+
+.file .name {
+	flex-grow: 3;
+	cursor: pointer;
+	line-height: 36px;
+	padding-left: 1ex;
+}
+

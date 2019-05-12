@@ -1,0 +1,10 @@
+<clr-modal [(clrModalOpen)]="visible">
+    <h3 class="modal-title">Error</h3>
+    <div class="modal-body">
+        <clr-icon shape="error-standard" size="32" class="floating-icon"></clr-icon>
+                  <p>{{ message }}</p>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="visible = false">Ok</button>
+    </div>
+</clr-modal>

@@ -1,5 +1,9 @@
 <div class="card-block">
-<p>
-  file-manager works!
-</p>
+  <ul class="file-list">
+    <li *ngFor="let file of files" class="file">
+      <span class="name" [title]="file.length | fileSize" (click)="displayFile(file)">{{ file.name }}</span>
+      <button class="btn btn-link" (click)="printFile(file)" title="Print file"><clr-icon shape="printer"></clr-icon></button>
+      <button class="btn btn-link" (click)="deleteFile(file)" title="Delete file"><clr-icon shape="trash"></clr-icon></button>
+    </li>
+  </ul>
 </div>

@@ -1,0 +1,15 @@
+<clr-modal [(clrModalOpen)]="visible">
+    <h3 class="modal-title">{{ file.name }} Preview</h3>
+    <div class="modal-body">
+        <div *ngIf="loading">
+          <p>Downloading...</p>
+          <p><progress max="100" [value]="downloadProgress" [attr.data-displayval]="downloadProgress + '%'"></progress></p>
+        </div>
+        <div *ngIf="!loading">
+
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="hide()">Close</button>
+    </div>
+</clr-modal>
