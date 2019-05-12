@@ -3,8 +3,10 @@ import {Printer, DiscoveredPrinter, PrinterTemperature, PrinterTemperatures, Tem
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/catch';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {catchError, map} from "rxjs/operators";
+import { PrintJob } from './PrintJob';
 
 @Injectable()
 export class PrintService {
@@ -95,6 +97,18 @@ export class PrintService {
         }
         // return an observable with a user-facing error message
         return of("Error: " + error.error);
-    };
+    }
+
+    getPrintJob(printer: Printer) : Observable<PrintJob> {
+        return this.http.get<any>('/api/v1/printers/' + printer.id + '/job')
+        .map(data => {
+            let job = new PrintJob();
+
+            job.name = data.name;
+
+            return job;
+        })
+        .catch(err => of<PrintJob>(null));
+    }
 
 }

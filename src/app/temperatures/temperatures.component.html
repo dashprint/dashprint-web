@@ -1,0 +1,32 @@
+<div class="card-block">
+    <canvas width="450" height="300" id="temperatures-graph" #temperaturesGraph></canvas>
+</div>
+    
+<div class="card-footer">
+      <div *ngIf="temperatures && temperatures.B" class="clr-form-control">
+        <label for="bed-target" class="clr-control-label">Bed Target Temp</label>
+        <div class="clr-control-container clr-error">
+          <div class="clr-input-wrapper">
+            <input type="text" id="bed-target" placeholder="°C" type="number" class="clr-input"
+              [value]='temperatures.B.target'
+              (input)='newTargetB = $event.target.value'
+              (keydown.enter)='setTargetTemperatures()'/>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="temperatures && temperatures.T" class="clr-form-control">
+        <label for="tool-target" class="clr-control-label">Tool Target Temp</label>
+        <div class="clr-control-container clr-error">
+          <div class="clr-input-wrapper">
+            <input type="text" id="tool-target" placeholder="°C" type="number" class="clr-input"
+              [value]='temperatures.T.target'
+              (input)='newTargetT = $event.target.value'
+              (keydown.enter)='setTargetTemperatures()'>
+          </div>
+        </div>
+      </div>
+    
+      <button *ngIf="temperatures && temperatures.T" class="btn btn-primary" (click)="setTargetTemperatures()">Set</button>
+  </div>
+  

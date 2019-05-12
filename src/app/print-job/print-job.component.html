@@ -1,0 +1,21 @@
+<div class="card-block">
+  <div *ngIf="!printJob">
+    <clr-icon shape="info-standard" size="32" class="icon-right"></clr-icon>
+    <p>No existing print job.</p>
+    <p>Drag & drop a GCODE or pick a file from the File Manager.</p>
+  </div>
+  
+  <div *ngIf="printJob" class="printjob">
+    <p><span class="job-param">Job name:</span> {{ printJob.name }}</p>
+    <p><span class="job-param">State:</span> {{ printJob.state }}</p>
+    <p><progress max="100" [value]="printJob.progress" [attr.data-displayval]="printJob.progress.toFixed(0) + '%'"></progress></p>
+  </div>
+</div>
+<div class="card-footer">
+    <div *ngIf="printJob">
+      <button *ngIf="PrintJob.state == 'Running'" class="btn btn-danger btn-icon" (click)="stopJob()"><clr-icon shape="stop"></clr-icon> Stop</button>
+      <button *ngIf="PrintJob.state == 'Running'" class="btn btn-outline btn-icon" (click)="pauseJob()"><clr-icon shape="pause"></clr-icon> Pause</button>
+      <button *ngIf="PrintJob.state == 'Paused'" class="btn btn-success btn-icon" (click)="resumeJob()"><clr-icon shape="play"></clr-icon> Continue</button>
+      <button *ngIf="PrintJob.state != 'Running'" class="btn btn-success-outline btn-icon" (click)="restartJob()"><clr-icon shape="replay-all"></clr-icon> Restart</button>
+    </div>
+</div>

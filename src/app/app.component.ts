@@ -5,7 +5,8 @@ import { ModalService } from './modal.service';
 import { AddprinterComponent } from './addprinter/addprinter.component';
 import {WebsocketService} from "./websocket.service";
 import {Subscription} from "rxjs/Subscription";
-import { TemperatureGraph } from './canvas/TemperatureGraph';
+import { FileService } from './file.service';
+import { HttpEventType } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -17,41 +18,17 @@ export class AppComponent implements OnInit {
   printers: Printer[];
 
   selectedPrinter: Printer;
-  temperatures: PrinterTemperatures;
-  temperatureHistory: TemperaturePoint[];
 
   selectedPrinterSubscription: Subscription;
-  temperaturesSubscription: Subscription;
 
   dragOver: number = 0;
   runningEnableDisable: boolean = false;
-
-  newTargetT;
-  newTargetB;
-
-  temperaturesGraph: ElementRef;
-  temperaturesGraphRenderer: TemperatureGraph;
-  @ViewChild("temperaturesGraph") set content(content: ElementRef) {
-    this.temperaturesGraph = content;
-
-    if (this.temperaturesGraph) {
-      this.temperaturesGraphRenderer = new TemperatureGraph(this.temperaturesGraph.nativeElement, (name, value) => {
-        let changes = {};
-        changes[name] = value;
-
-        this.printService.setPrinterTargetTemperatures(this.selectedPrinter, changes).subscribe(result => {
-          console.log("Target temp change result: " + result);
-        });
-      });
-      this.updateTemperaturesGraph();
-    }
-  }
 
   @ViewChild('modals', {
     read: ViewContainerRef
   }) viewContainerRef: ViewContainerRef;
 
-  constructor(private printService: PrintService, private modalService: ModalService, private websocketService: WebsocketService) {
+  constructor(private printService: PrintService, private modalService: ModalService, private websocketService: WebsocketService, private fileService: FileService) {
   }
 
   ngOnInit() {
@@ -86,19 +63,6 @@ export class AppComponent implements OnInit {
       this.modalService.showModal(AddprinterComponent);
   }
 
-  private pushTempHistory() {
-    const MAX_TEMPERATURE_HISTORY = 30*60*1000;
-    // clone current temperatures
-    var temps: PrinterTemperatures = JSON.parse(JSON.stringify(this.temperatures));
-    var now: Date = new Date();
-
-    this.temperatureHistory.push({ when: now, values: temps });
-
-    // Kill old data
-    while (this.temperatureHistory.length > 0 && (now.getUTCMilliseconds() - this.temperatureHistory[0].when.getUTCMilliseconds()) > MAX_TEMPERATURE_HISTORY)
-      this.temperatureHistory.shift();
-  }
-
   switchPrinter(printer: Printer) {
     if (printer === this.selectedPrinter)
       return;
@@ -108,54 +72,10 @@ export class AppComponent implements OnInit {
       this.selectedPrinterSubscription = null;
     }
 
-    if (this.temperaturesSubscription) {
-      this.temperaturesSubscription.unsubscribe();
-      this.temperaturesSubscription = null;
-    }
-
     this.selectedPrinter = printer;
 
     this.selectedPrinterSubscription = this.websocketService
         .subscribeToPrinter(this.selectedPrinter).subscribe((printer: Printer) => {});
-
-    this.temperatures = null;
-    this.temperatureHistory = null;
-    this.updateTemperaturesGraph();
-
-    this.printService.getPrinterTemperatures(this.selectedPrinter).subscribe((temps) => {
-      this.temperatureHistory = temps;
-
-      if (temps && temps.length > 0)
-        this.temperatures = temps[temps.length-1].values;
-      else
-        this.temperatures = {};
-      this.updateTemperaturesGraph();
-
-      this.temperaturesSubscription = this.websocketService.subscribeToPrinterTemperatures(this.selectedPrinter, this.temperatures)
-          .subscribe((temps) => {
-              this.pushTempHistory();
-              this.updateTemperaturesGraph();
-      });
-    });
-  }
-
-  private updateTemperaturesGraph() {
-    if (!this.temperaturesGraphRenderer)
-      return;
-
-    this.temperaturesGraphRenderer.temperatureHistory = this.temperatureHistory;
-    this.temperaturesGraphRenderer.temperatures = JSON.parse(JSON.stringify(this.temperatures));
-    this.temperaturesGraphRenderer.render();
-  }
-
-  setTargetTemperatures() {
-    let changes = {
-      'B': parseInt(this.newTargetB),
-      'T': parseInt(this.newTargetT)
-    }
-    this.printService.setPrinterTargetTemperatures(this.selectedPrinter, changes).subscribe(result => {
-      console.log("Target temp change result: " + result);
-    });
   }
 
   onFileDrop(event: DragEvent) {
@@ -178,10 +98,38 @@ export class AppComponent implements OnInit {
   }
 
   private processFile(file: File) {
+    this.dragOver = 0;
+
     if (!file.name.toLowerCase().endsWith(".gcode")) {
-      // TODO: Display an error
+        alert("Only GCODE files are accepted!");
         return;
     }
+
+    // TODO: Show overlay with progress
+    this.fileService.uploadFile(file).subscribe(event => {
+      switch(event.type) {
+        case HttpEventType.Response:
+        // Upload done
+        // TODO: Hide progress overlay
+        // TODO: reload file list
+        // TODO: If no print job is running, ask for starting the print
+        if (event.ok) {
+          const loc = event.headers.get('location');
+          console.debug("File uploaded as: " + loc);
+        } else {
+          console.error("Upload failed: " + event.statusText);
+        }
+        break;
+
+        case HttpEventType.UploadProgress:
+        // TODO: Update progress
+        const percentDone = Math.round(100 * event.loaded / event.total);
+        console.debug("File progress: " + percentDone);
+
+        break;
+      }
+    });
+    
   }
 
   onDragEnter(event: DragEvent) {

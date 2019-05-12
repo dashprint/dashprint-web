@@ -1,0 +1,13 @@
+
+#temperatures-graph {
+    margin: 1ex;
+}
+
+.printer-temperatures .clr-form-control {
+    display: inline-block;
+    padding: 2ex;
+}
+
+.printer-temperatures .clr-input {
+    width: 5rem;
+}

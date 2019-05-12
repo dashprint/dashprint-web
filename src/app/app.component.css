@@ -20,21 +20,12 @@
     color: white;
     padding: 20ex;
     font-size: 400%;
+    line-height: initial;
 }
 
-.printer-temperatures {
-    width: 480px;
+.card {
+    float: left;
+    margin-right: 1rem;
+    max-width: 500px;
 }
 
-#temperatures-graph {
-    margin: 1ex;
-}
-
-.printer-temperatures .clr-form-control {
-    display: inline-block;
-    padding: 2ex;
-}
-
-.printer-temperatures .clr-input {
-    width: 5rem;
-}
