@@ -14,7 +14,7 @@ export interface ProgramInfo {
 }
 
 export class GLView {
-    protected gl: WebGLRenderingContext;
+    protected gl: WebGL2RenderingContext;
     protected programInfo: ProgramInfo;
     private scene: Renderable[] = [];
     public camera: Camera;
@@ -39,7 +39,9 @@ export class GLView {
     }
 
     setup() {
-        this.gl = this.canvas.getContext('webgl', { alpha: false });
+        let hadGl = !!this.gl;
+
+        this.gl = this.canvas.getContext('webgl2', { alpha: false });
 
         if (!this.gl)
             throw new Error("WebGL is not available");
@@ -81,6 +83,13 @@ export class GLView {
             modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
             cameraMatrix: gl.getUniformLocation(shaderProgram, 'uCameraMatrix'),
         };
+
+        if (!hadGl)
+            this.fillScene();
+    }
+
+    // addRenderable() can be called now
+    protected fillScene() {
     }
 
     public requestRender() {

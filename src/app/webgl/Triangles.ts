@@ -31,11 +31,15 @@ export class Triangles extends Renderable {
     }
 
     deallocate(gl: WebGLRenderingContext) {
-        if (this.vertexBuffer)
+        if (this.vertexBuffer) {
             gl.deleteBuffer(this.vertexBuffer);
+            this.vertexBuffer = null;
+        }
 
-        if (this.indexBuffer)
+        if (this.indexBuffer) {
             gl.deleteBuffer(this.indexBuffer);
+            this.indexBuffer = null;
+        }
     }
 
     render(gl: WebGLRenderingContext, programInfo: ProgramInfo) {

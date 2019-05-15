@@ -2,6 +2,6 @@
     <h3 class="modal-title">Upload Progress</h3>
     <div class="modal-body">
         <p>Transferring {{ total | fileSize }}...</p>
-        <p><progress max="100" [value]="total / done * 100" [attr.data-displayval]="(total / done * 100).toFixed(0) + '%'"></progress></p>
+        <p><progress *ngIf="total" max="100" [value]="total / done * 100" [attr.data-displayval]="(total / done * 100).toFixed(0) + '%'"></progress></p>
     </div>
 </clr-modal>

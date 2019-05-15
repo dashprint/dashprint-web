@@ -114,7 +114,7 @@ function parseTextSTL(data) {
     return [];
 }
 
-function parseSTL(data) {
+function parseSTL(reqId, data) {
     console.log("parseSTL called");
     var triangles;
     var decoder = new TextDecoder('ascii');
@@ -124,13 +124,13 @@ function parseSTL(data) {
     else
         triangles = parseBinarySTL(data);
 
-    postMessage(triangles);
+    postMessage([reqId, triangles]);
 }
 
 
 addEventListener('message', (message) => {
-    // message.data is ArrayBuffer
+    // message.data is [id,ArrayBuffer]
     // the response is expected to be Triangle[]
 
-    parseSTL(message.data);
+    parseSTL(message.data[0], message.data[1]);
 });

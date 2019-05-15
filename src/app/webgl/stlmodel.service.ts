@@ -6,7 +6,8 @@ import 'rxjs/add/observable/from';
 
 @Injectable()
 export class StlmodelService {
-    private worker: Worker;
+  private worker: Worker;
+  private reqId: number = 0;
 
   constructor(private http: HttpClient) {
       this.worker = new Worker('/assets/workers/STLModel.worker.js');
@@ -23,15 +24,23 @@ export class StlmodelService {
   }
 
   private handleSTLArrayBuffer(observer, arrayBuffer: ArrayBuffer) {
+    let myReqId = this.reqId++;
 
-      this.worker.addEventListener('message', (msg) => {
-          if (msg.data) {
-              observer.next(new Triangles(msg.data.vertices, null, msg.data.center, msg.data.dimensions));
-              observer.complete();
-          } else {
-              throw Observable.throw("STL failed to load");
-          }
-      });
-      this.worker.postMessage(arrayBuffer);
+    var fn = (msg) => {
+        if (msg.data[0] === myReqId) {
+            this.worker.removeEventListener('message', fn);
+
+            let data = msg.data[1];
+            if (data) {
+                observer.next(new Triangles(data.vertices, null, data.center, data.dimensions));
+                observer.complete();
+            } else {
+                throw Observable.throw("STL failed to load");
+            }
+        }
+    };
+
+    this.worker.addEventListener('message', fn);
+    this.worker.postMessage([myReqId, arrayBuffer]);
   }
 }

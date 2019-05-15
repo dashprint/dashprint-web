@@ -32,8 +32,8 @@ export class FileService {
     return this.http.request(req);
   }
 
-  downloadFile(f: ServerFile) : Observable<HttpEvent<any>> {
-    let req = new HttpRequest('GET', '/api/v1/files/' + f.name, f, { reportProgress: true });
+  downloadFile(f: ServerFile) : Observable<HttpEvent<Blob>> {
+    let req = new HttpRequest('GET', '/api/v1/files/' + f.name, f, { reportProgress: true, responseType: 'blob' });
     return this.http.request(req);
   }
 }

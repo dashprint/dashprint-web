@@ -19,6 +19,8 @@ import { UploadProgressComponent } from './upload-progress/upload-progress.compo
 import { FileSizePipe } from './file-size.pipe';
 import { ErrorPopupComponent } from './error-popup/error-popup.component';
 import { GcodeFilePreviewComponent } from './gcode-file-preview/gcode-file-preview.component';
+import { DurationPipe } from './duration.pipe';
+import { GCodeService } from './gcode.service';
 
 @NgModule({
   declarations: [
@@ -30,7 +32,8 @@ import { GcodeFilePreviewComponent } from './gcode-file-preview/gcode-file-previ
     UploadProgressComponent,
     FileSizePipe,
     ErrorPopupComponent,
-    GcodeFilePreviewComponent
+    GcodeFilePreviewComponent,
+    DurationPipe
   ],
   imports: [
     BrowserModule,
@@ -40,12 +43,13 @@ import { GcodeFilePreviewComponent } from './gcode-file-preview/gcode-file-previ
     FormsModule,
     ReactiveFormsModule
   ],
-  providers: [PrintService, ModalService, StlmodelService, WebsocketService, FileService],
+  providers: [PrintService, ModalService, StlmodelService, WebsocketService, FileService, GCodeService],
   bootstrap: [AppComponent],
   entryComponents: [
     AddprinterComponent,
     UploadProgressComponent,
-    ErrorPopupComponent
+    ErrorPopupComponent,
+    GcodeFilePreviewComponent
   ],
 })
 export class AppModule { }

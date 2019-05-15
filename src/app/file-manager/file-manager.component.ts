@@ -33,8 +33,8 @@ export class FileManagerComponent implements OnInit {
   }
 
   displayFile(file: ServerFile) {
-    // TODO: Show popup, download GCODE contents, analyze, show preview etc.
     let preview = <GcodeFilePreviewComponent> this.modalService.showModal(GcodeFilePreviewComponent);
+    preview.loadFile(file);
   }
 
 }
