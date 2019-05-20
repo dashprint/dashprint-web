@@ -16,7 +16,7 @@ import { ModalService } from '../modal.service';
 })
 export class AddprinterComponent extends Modal implements OnInit {
   discoveredPrinters: DiscoveredPrinter[];
-  //selectedDevice: DiscoveredPrinter;
+  selectedDevice: DiscoveredPrinter;
   //devicePath: string;
   //baudRate: number = 115200;
   //printerName: string;
@@ -79,6 +79,7 @@ export class AddprinterComponent extends Modal implements OnInit {
         this.formPageOne.get('printerName').setValue(selectedDevice.name);
         this.formPageOne.get('devicePath').setValue(selectedDevice.path);
     }
+    this.selectedDevice = selectedDevice;
   }
 
   onDimensionsChanged() {

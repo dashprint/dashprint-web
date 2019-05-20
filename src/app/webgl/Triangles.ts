@@ -10,8 +10,8 @@ export class Triangles extends Renderable {
         super();
     }
 
-    allocate(gl: WebGLRenderingContext, programInfo: ProgramInfo) {
-        super.allocate(gl, programInfo);
+    allocate(gl: WebGLRenderingContext) {
+        super.allocate(gl);
 
         if (!this.vertexBuffer)
             this.vertexBuffer = gl.createBuffer();

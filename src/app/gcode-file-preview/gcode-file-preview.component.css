@@ -5,3 +5,9 @@ progress {
 #gcodePreview {
 	outline: #ccc 1px solid;
 }
+
+h3 {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}

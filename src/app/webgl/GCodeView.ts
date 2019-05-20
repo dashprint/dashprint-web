@@ -36,14 +36,18 @@ export class GCodeView extends GLView {
 
 		if (gcode) {
 			let scale = new Float32Array([1/mmScale, 1/mmScale, 1/mmScale]);
+			let segmentCount = 0;
 
 			// Update the renderable list
 			this.layers = gcode.layers.map<RenderableLayer>(l => {
 				let r = new RenderableLayer(l, 0.4);
 				r.setScale(scale);
+				segmentCount += l.lines.length;
 				this.addRenderable(r);
 				return r;
 			});
+
+			console.debug("Segment count: " + segmentCount);
 		}
 
 		this.requestRender();
@@ -67,7 +71,7 @@ class RenderableLayer extends Renderable {
 	private fanIndicesIndex = 0;
 	private stripIndicesIndex = 0;
 
-	public color: Float32Array = new Float32Array([0, 0, 0, 1]);
+	public color: Float32Array = new Float32Array([0.5, 0.5, 0.5, 0.5]);
 
 	constructor(private layer: GCodeLayer, private thickness: number) {
 		super();
@@ -216,19 +220,19 @@ class RenderableLayer extends Renderable {
 
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexFanBuffer);
 		gl.drawElements(gl.TRIANGLE_FAN, this.indicesTriangleFans.length, gl.UNSIGNED_SHORT, 0);
-		if (gl.getError() != gl.NO_ERROR)
-			console.error("WebGL error #1");
+		// if (gl.getError() != gl.NO_ERROR)
+		//	console.error("WebGL error #1");
 
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexStripBuffer);
 		gl.drawElements(gl.TRIANGLE_STRIP, this.indicesTriangleStrips.length, gl.UNSIGNED_SHORT, 0);
-		if (gl.getError() != gl.NO_ERROR)
-			console.error("WebGL error #2");
+		//if (gl.getError() != gl.NO_ERROR)
+		//	console.error("WebGL error #2");
 		
 		gl.bindBuffer(gl.ARRAY_BUFFER, null);
 	}
 
-	allocate(gl: WebGLRenderingContext, programInfo: ProgramInfo) {
-		super.allocate(gl, programInfo);
+	allocate(gl: WebGLRenderingContext) {
+		super.allocate(gl);
 
         if (!this.vertexBuffer)
             this.vertexBuffer = gl.createBuffer();

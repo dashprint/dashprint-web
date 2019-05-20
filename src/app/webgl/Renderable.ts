@@ -1,5 +1,5 @@
 import * as mat4 from "gl-matrix-mat4";
-import {ProgramInfo} from "./GLView";
+import {ProgramInfo, LightingProgramInfo} from "./GLView";
 import {Camera} from "./Camera";
 
 export class Renderable {
@@ -11,11 +11,15 @@ export class Renderable {
     constructor() {
     }
 
-    public allocate(gl: WebGLRenderingContext, programInfo: ProgramInfo) {
+    public allocate(gl: WebGLRenderingContext) {
         this.updateMatrix();
     }
 
     public render(gl: WebGLRenderingContext, programInfo: ProgramInfo) {
+        gl.uniformMatrix4fv(programInfo.modelViewMatrix, false, this.matrix);
+    }
+
+    public renderWithLighting(gl: WebGLRenderingContext, programInfo: LightingProgramInfo) {
         gl.uniformMatrix4fv(programInfo.modelViewMatrix, false, this.matrix);
     }
 

@@ -117,6 +117,7 @@ export class AppComponent implements OnInit {
 
     this.fileService.uploadFile(file).subscribe(event => {
       switch(event.type) {
+        // TODO: if the connection fails, this doesn't get called?!
         case HttpEventType.Response:
           // Upload done
           // Hide progress overlay
@@ -147,6 +148,9 @@ export class AppComponent implements OnInit {
 
           break;
       }
+    }, error => {
+      console.error("Upload failed: " + error.message);
+      this.showErrorMessage("Upload failed: " + error.message);
     });
     
   }

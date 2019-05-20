@@ -13,9 +13,17 @@ export interface ProgramInfo {
     cameraMatrix: WebGLUniformLocation;
 }
 
+export interface LightingProgramInfo extends ProgramInfo {
+    normal: GLint;
+
+    lightPos: WebGLUniformLocation;
+    lightColor: WebGLUniformLocation;
+}
+
 export class GLView {
     protected gl: WebGL2RenderingContext;
     protected programInfo: ProgramInfo;
+    protected programInfoLight: LightingProgramInfo;
     private scene: Renderable[] = [];
     public camera: Camera;
 
@@ -46,15 +54,25 @@ export class GLView {
         if (!this.gl)
             throw new Error("WebGL is not available");
 
-        const vsSource = `
-            attribute vec4 aVertexPosition;
-            attribute vec4 aVertexColor;
+        this.setupSimpleShaders();
+        this.setupLightingShaders();
+        
+        if (!hadGl)
+            this.fillScene();
+    }
+
+    private setupSimpleShaders() {
+        const vsSource = `#version 300 es
+            precision mediump float;
+
+            layout(location = 0) in vec4 aVertexPosition;
+            layout(location = 1) in vec4 aVertexColor;
             
             uniform mat4 uModelViewMatrix;
             uniform mat4 uProjectionMatrix;
             uniform mat4 uCameraMatrix;
             
-            varying lowp vec4 vColor;
+            out vec4 vColor;
 
             void main(void) {
               gl_Position = uProjectionMatrix * uCameraMatrix * uModelViewMatrix * aVertexPosition;
@@ -62,17 +80,20 @@ export class GLView {
             }
           `;
 
-        const fsSource = `
-            varying lowp vec4 vColor;
+        const fsSource = `#version 300 es
+            precision mediump float;
+
+            in vec4 vColor;
+            out vec4 fragColor;
 
             void main(void) {
-              gl_FragColor = vColor;
+              fragColor = vColor;
             }
           `;
 
         let shaderProgram = this.initShaderProgram(vsSource, fsSource);
-        let gl = this.gl;
 
+        let gl = this.gl;
         this.programInfo = {
             program: shaderProgram,
 
@@ -83,9 +104,79 @@ export class GLView {
             modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
             cameraMatrix: gl.getUniformLocation(shaderProgram, 'uCameraMatrix'),
         };
+    }
 
-        if (!hadGl)
-            this.fillScene();
+    private setupLightingShaders() {
+        const vsSource = `#version 300 es
+            precision mediump float;
+
+            layout(location = 0) in vec4 aVertexPosition;
+            layout(location = 1) in vec4 aVertexColor;
+            layout(location = 2) in vec4 aNormal;
+            
+            uniform mat4 uModelViewMatrix;
+            uniform mat4 uProjectionMatrix;
+            uniform mat4 uCameraMatrix;
+            
+            out vec4 vColor;
+            out vec4 vNormal;
+            out vec4 vFragPos;
+
+            void main(void) {
+              vFragPos = uModelViewMatrix * aVertexPosition;
+              gl_Position = uProjectionMatrix * uCameraMatrix * vFragPos;
+              vColor = aVertexColor;
+              vNormal = aNormal;
+            }
+          `;
+
+          // https://learnopengl.com/Lighting/Basic-Lighting
+          // https://github.com/JoeyDeVries/LearnOpenGL/blob/master/src/2.lighting/2.1.basic_lighting_diffuse/2.1.basic_lighting.fs
+        const fsSource = `#version 300 es
+            precision mediump float;
+
+            out vec4 fragColor;
+
+            in vec4 vColor;
+            in vec4 vNormal;
+            in vec4 vFragPos;
+
+            uniform vec4 uLightPos;
+            uniform vec4 uLightColor;
+
+            void main(void) {
+                // Ambient light
+                float ambientStrength = 0.1;
+                vec4 ambient = ambientStrength * uLightColor;
+
+                // Diffuse light
+                vec4 norm = normalize(vNormal);
+                vec4 lightDir = normalize(uLightPos - vFragPos);
+                float diff = max(dot(norm, lightDir), 0.0);
+                vec4 diffuse = diff * uLightColor;
+
+                vec4 result = (ambient + diffuse) * vColor;
+                fragColor = result;
+            }
+        `;
+
+        let shaderProgram = this.initShaderProgram(vsSource, fsSource);
+
+        let gl = this.gl;
+        this.programInfoLight = {
+            program: shaderProgram,
+
+            vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+            vertexColor: gl.getAttribLocation(shaderProgram, 'aVertexColor'),
+            normal: gl.getAttribLocation(shaderProgram, 'aNormal'),
+
+            projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
+            modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+            cameraMatrix: gl.getUniformLocation(shaderProgram, 'uCameraMatrix'),
+
+            lightPos: gl.getUniformLocation(shaderProgram, 'uLightPos'),
+            lightColor: gl.getUniformLocation(shaderProgram, 'uLightColor'),
+        };
     }
 
     // addRenderable() can be called now
@@ -136,7 +227,7 @@ export class GLView {
         // See if it compiled successfully
 
         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-            gl.deleteShader(shader);
+            //gl.deleteShader(shader);
             throw new Error('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
         }
 
@@ -157,7 +248,7 @@ export class GLView {
         const fieldOfView = 45 * Math.PI / 180;   // in radians
         var aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
         const zNear = 0.1;
-        const zFar = 100.0;
+        const zFar = 10.0;
         const projectionMatrix = mat4.create();
 
         // FIXME: Use this: http://marcj.github.io/css-element-queries/
@@ -170,6 +261,7 @@ export class GLView {
             zNear,
             zFar);
 
+        // Non-lighted
         gl.useProgram(this.programInfo.program);
 
         gl.uniformMatrix4fv(
@@ -183,6 +275,21 @@ export class GLView {
              if (r.shouldRender(this.camera))
                 r.render(this.gl, this.programInfo)
         });
+
+        // Lighted
+        gl.useProgram(this.programInfoLight.program);
+
+        gl.uniformMatrix4fv(
+            this.programInfoLight.projectionMatrix,
+            false,
+            projectionMatrix);
+
+        this.camera.apply(this.gl, this.programInfoLight);
+
+        this.scene.forEach(r => {
+             if (r.shouldRender(this.camera))
+                r.renderWithLighting(this.gl, this.programInfoLight)
+        });
     }
 
     public addRenderable(r: Renderable, prepend: boolean = false) {
@@ -191,7 +298,7 @@ export class GLView {
         else
             this.scene.push(r);
 
-        r.allocate(this.gl, this.programInfo);
+        r.allocate(this.gl);
     }
 
     public removeRenderable(r: Renderable) {

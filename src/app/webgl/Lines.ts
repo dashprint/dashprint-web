@@ -24,8 +24,8 @@ export class Lines extends Renderable {
         }
     }
 
-    public allocate(gl: WebGLRenderingContext, programInfo: ProgramInfo) {
-        super.allocate(gl, programInfo);
+    public allocate(gl: WebGLRenderingContext) {
+        super.allocate(gl);
 
         if (!this.vertexBuffer)
             this.vertexBuffer = gl.createBuffer();

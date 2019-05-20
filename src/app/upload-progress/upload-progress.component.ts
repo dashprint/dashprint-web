@@ -9,8 +9,8 @@ import { ModalService } from '../modal.service';
 })
 export class UploadProgressComponent extends Modal implements OnInit {
 
-  total: number;
-  done: number;
+  total: number = 0;
+  done: number = 0;
 
   constructor(modalService: ModalService) {
     super(modalService);
