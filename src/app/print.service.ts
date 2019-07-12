@@ -112,9 +112,9 @@ export class PrintService {
         .catch(err => of<PrintJob>(null));
     }
 
-    printFile(printer: Printer, file: ServerFile) : Observable<HttpEvent<any>> {
+    printFile(printer: Printer, file: string) : Observable<HttpEvent<any>> {
         let data = {
-            file: file.name
+            file: file
         };
         let req = new HttpRequest('POST', '/api/v1/printers/' + printer.id + '/job', data);
         return this.http.request(req);

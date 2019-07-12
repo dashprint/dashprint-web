@@ -21,6 +21,7 @@ import { ErrorPopupComponent } from './error-popup/error-popup.component';
 import { GcodeFilePreviewComponent } from './gcode-file-preview/gcode-file-preview.component';
 import { DurationPipe } from './duration.pipe';
 import { GCodeService } from './gcode.service';
+import { PromptPopupComponent } from './prompt-popup/prompt-popup.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { GCodeService } from './gcode.service';
     FileSizePipe,
     ErrorPopupComponent,
     GcodeFilePreviewComponent,
-    DurationPipe
+    DurationPipe,
+    PromptPopupComponent
   ],
   imports: [
     BrowserModule,
@@ -49,6 +51,7 @@ import { GCodeService } from './gcode.service';
     AddprinterComponent,
     UploadProgressComponent,
     ErrorPopupComponent,
+    PromptPopupComponent,
     GcodeFilePreviewComponent
   ],
 })

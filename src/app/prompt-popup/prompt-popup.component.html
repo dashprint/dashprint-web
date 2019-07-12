@@ -1,0 +1,11 @@
+<clr-modal [(clrModalOpen)]="visible">
+  <h3 class="modal-title">{{ title }}</h3>
+  <div class="modal-body">
+      <clr-icon shape="error-standard" size="32" class="floating-icon"></clr-icon>
+                <p>{{ message }}</p>
+  </div>
+  <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="onSecondaryClicked()">{{ secondaryButtonText }}</button>
+      <button type="button" [ngClass]="['btn', primaryButtonClass]" (click)="onPrimaryClicked()">{{ primaryButtonText }}</button>
+  </div>
+</clr-modal>

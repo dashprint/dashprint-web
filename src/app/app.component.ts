@@ -11,6 +11,8 @@ import { UploadProgressComponent } from './upload-progress/upload-progress.compo
 import { FileManagerComponent } from './file-manager/file-manager.component';
 import { ErrorPopupComponent } from './error-popup/error-popup.component';
 import { ServerFile } from './File';
+import { PrintJobComponent } from './print-job/print-job.component';
+import { PromptPopupComponent } from './prompt-popup/prompt-popup.component';
 
 @Component({
   selector: 'app-root',
@@ -33,6 +35,7 @@ export class AppComponent implements OnInit {
   }) viewContainerRef: ViewContainerRef;
 
   @ViewChild("fileManagerComponent") fileManagerComponent: FileManagerComponent;
+  @ViewChild("printJobComponent") printJobComponent: PrintJobComponent;
 
   constructor(private printService: PrintService, private modalService: ModalService, private websocketService: WebsocketService, private fileService: FileService) {
   }
@@ -131,7 +134,20 @@ export class AppComponent implements OnInit {
             // reload file list
             this.fileManagerComponent.reload();
 
-            // TODO: If no print job is running, ask for starting the print
+            // If no print job is running, ask for starting the print
+            if (!this.printJobComponent.printJob) {
+              let modal = <PromptPopupComponent> this.modalService.showModal(PromptPopupComponent);
+              
+              modal.title = "Print Job";
+              modal.message = "Start printing '" + file.name + "' now?";
+              modal.primaryButtonText = "Yes";
+              modal.secondaryButtonText = "No";
+
+              modal.buttonClicked.subscribe(primaryPressed => {
+                if (primaryPressed)
+                  this.doPrintFile(file.name);
+              });
+            }
           } else {
             console.error("Upload failed: " + event.statusText);
 
@@ -188,21 +204,25 @@ export class AppComponent implements OnInit {
     this.showErrorMessage("Not implemented :-(");
   }
 
-  onFilePrinted(file: ServerFile) {
+  private doPrintFile(fileName: string) {
     if (!this.selectedPrinter) {
       this.showErrorMessage("No printer is selected.");
       return;
     }
 
-    this.printService.printFile(this.selectedPrinter, file).subscribe(event => {
+    this.printService.printFile(this.selectedPrinter, fileName).subscribe(event => {
       if (event.type === HttpEventType.Response) {
         if (event.status === 404)
           this.showErrorMessage("File not found.");
         else if (event.status === 409)
           this.showErrorMessage("The printer is busy.");
         else if (!event.ok)
-          this.showErrorMessage("Error: " + event.statusText);
+          this.showErrorMessage("Error: " + event.body);
       }
     });
+  }
+
+  onFilePrinted(file: ServerFile) {
+    this.doPrintFile(file.name);
   }
 }

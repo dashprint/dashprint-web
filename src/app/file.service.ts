@@ -36,4 +36,9 @@ export class FileService {
     let req = new HttpRequest('GET', '/api/v1/files/' + f.name, f, { reportProgress: true, responseType: 'blob' });
     return this.http.request(req);
   }
+
+  deleteFile(f: ServerFile) : Observable<HttpEvent<any>> {
+    let req = new HttpRequest('DELETE', '/api/v1/files/' + f.name);
+    return this.http.request(req);
+  }
 }
