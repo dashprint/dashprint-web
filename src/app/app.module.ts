@@ -22,6 +22,8 @@ import { GcodeFilePreviewComponent } from './gcode-file-preview/gcode-file-previ
 import { DurationPipe } from './duration.pipe';
 import { GCodeService } from './gcode.service';
 import { PromptPopupComponent } from './prompt-popup/prompt-popup.component';
+import { LoginPopupComponent } from './login-popup/login-popup.component';
+import { CookieService } from 'ngx-cookie-service';
 
 @NgModule({
   declarations: [
@@ -35,7 +37,8 @@ import { PromptPopupComponent } from './prompt-popup/prompt-popup.component';
     ErrorPopupComponent,
     GcodeFilePreviewComponent,
     DurationPipe,
-    PromptPopupComponent
+    PromptPopupComponent,
+    LoginPopupComponent
   ],
   imports: [
     BrowserModule,
@@ -45,7 +48,7 @@ import { PromptPopupComponent } from './prompt-popup/prompt-popup.component';
     FormsModule,
     ReactiveFormsModule
   ],
-  providers: [PrintService, ModalService, StlmodelService, WebsocketService, FileService, GCodeService],
+  providers: [PrintService, ModalService, StlmodelService, WebsocketService, FileService, GCodeService, CookieService],
   bootstrap: [AppComponent],
   entryComponents: [
     AddprinterComponent,

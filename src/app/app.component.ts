@@ -13,6 +13,8 @@ import { ErrorPopupComponent } from './error-popup/error-popup.component';
 import { ServerFile } from './File';
 import { PrintJobComponent } from './print-job/print-job.component';
 import { PromptPopupComponent } from './prompt-popup/prompt-popup.component';
+import { AuthenticationService } from './authentication.service';
+import { LoginPopupComponent } from './login-popup/login-popup.component';
 
 @Component({
   selector: 'app-root',
@@ -37,10 +39,15 @@ export class AppComponent implements OnInit {
   @ViewChild("fileManagerComponent") fileManagerComponent: FileManagerComponent;
   @ViewChild("printJobComponent") printJobComponent: PrintJobComponent;
 
-  constructor(private printService: PrintService, private modalService: ModalService, private websocketService: WebsocketService, private fileService: FileService) {
+  constructor(private printService: PrintService, private modalService: ModalService,
+    private websocketService: WebsocketService, private fileService: FileService,
+    private authenticationService: AuthenticationService) {
   }
 
   ngOnInit() {
+      if (!this.authenticationService.hasValidToken()) {
+        let modal = <LoginPopupComponent> this.modalService.showModal(LoginPopupComponent);
+      }
       // Get printer list
       this.updatePrinterList();
       this.websocketService.subscribeToPrinterList(() => this.updatePrinterList());
