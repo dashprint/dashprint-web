@@ -1,0 +1,18 @@
+<clr-modal [(clrModalOpen)]="visible" [clrModalClosable]="false">
+    <h3 class="modal-title">Login</h3>
+    <form class="login">
+      <div class="modal-body">
+          <div class="login-group">
+              <clr-input-container>
+                  <input type="text" name="username" clrInput placeholder="Username" [(ngModel)]="username"/>
+              </clr-input-container>
+              <clr-password-container>
+                  <input type="password" name="password" clrPassword placeholder="Password" [(ngModel)]="password"/>
+              </clr-password-container>
+          </div>
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="visible = false">Login</button>
+      </div>
+    </form>
+</clr-modal>
