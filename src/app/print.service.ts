@@ -4,9 +4,10 @@ import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
-import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders, HttpEvent, HttpRequest} from '@angular/common/http';
 import {catchError, map} from "rxjs/operators";
 import { PrintJob } from './PrintJob';
+import { ServerFile } from './File';
 
 @Injectable()
 export class PrintService {
@@ -109,6 +110,14 @@ export class PrintService {
             return job;
         })
         .catch(err => of<PrintJob>(null));
+    }
+
+    printFile(printer: Printer, file: ServerFile) : Observable<HttpEvent<any>> {
+        let data = {
+            file: file.name
+        };
+        let req = new HttpRequest('POST', '/api/v1/printers/' + printer.id + '/job', data);
+        return this.http.request(req);
     }
 
 }

@@ -70,7 +70,7 @@
 
         <div class="file-manager card">
             <div class="card-header">File Manager</div>
-            <app-file-manager #fileManagerComponent></app-file-manager>
+            <app-file-manager #fileManagerComponent (filePrinted)="onFilePrinted($event)"></app-file-manager>
         </div>
       </div>
 

@@ -3,6 +3,7 @@ import { Printer } from '../Printer';
 import { PrintService } from '../print.service';
 import { WebsocketService } from "../websocket.service";
 import { PrintJob } from '../PrintJob';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
   selector: 'app-print-job',
@@ -12,6 +13,7 @@ import { PrintJob } from '../PrintJob';
 export class PrintJobComponent implements OnInit {
   _printer: Printer;
   printJob: PrintJob;
+  printJobSubscription: Subscription;
 
   constructor(private printService: PrintService, private websocketService: WebsocketService) { }
 
@@ -25,13 +27,15 @@ export class PrintJobComponent implements OnInit {
   @Input()
   set printer(printer: Printer) {
     if (this.printer) {
-      // TODO: Unsubscribe from old printer events
+      // Unsubscribe from old printer events
+      if (this.printJobSubscription) {
+        this.printJobSubscription.unsubscribe();
+        this.printJobSubscription = null;
+      }
     }
 
     console.debug("Printer changed in PrintJobComponent");
     this._printer = printer;
-
-    // TODO: Subscribe to job events
 
     this.reload();
   }
@@ -41,6 +45,11 @@ export class PrintJobComponent implements OnInit {
     if (this.printer) {
       this.printService.getPrintJob(this.printer).subscribe((printJob) => {
         this.printJob = printJob;
+
+        // Subscribe to job events
+        this.printJobSubscription = this.websocketService.subscribeToPrinterJobs(this.printer, this.printJob).subscribe(printJob => {
+          this.printJob = printJob;
+        });
       });
     } else {
       this.printJob = null;

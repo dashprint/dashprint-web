@@ -1,6 +1,7 @@
 export class PrintJob {
 	name: string;
-	progress: number;
+	done: number;
+	total: number;
 	state: string;
 	error: string;
 }

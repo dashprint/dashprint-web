@@ -10,6 +10,7 @@ import { HttpEventType } from '@angular/common/http';
 import { UploadProgressComponent } from './upload-progress/upload-progress.component';
 import { FileManagerComponent } from './file-manager/file-manager.component';
 import { ErrorPopupComponent } from './error-popup/error-popup.component';
+import { ServerFile } from './File';
 
 @Component({
   selector: 'app-root',
@@ -185,5 +186,23 @@ export class AppComponent implements OnInit {
   editPrinter(printer: Printer) {
     // TODO
     this.showErrorMessage("Not implemented :-(");
+  }
+
+  onFilePrinted(file: ServerFile) {
+    if (!this.selectedPrinter) {
+      this.showErrorMessage("No printer is selected.");
+      return;
+    }
+
+    this.printService.printFile(this.selectedPrinter, file).subscribe(event => {
+      if (event.type === HttpEventType.Response) {
+        if (event.status === 404)
+          this.showErrorMessage("File not found.");
+        else if (event.status === 409)
+          this.showErrorMessage("The printer is busy.");
+        else if (!event.ok)
+          this.showErrorMessage("Error: " + event.statusText);
+      }
+    });
   }
 }

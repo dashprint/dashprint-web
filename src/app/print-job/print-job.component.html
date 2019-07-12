@@ -6,16 +6,16 @@
   </div>
   
   <div *ngIf="printJob" class="printjob">
-    <p><span class="job-param">Job name:</span> {{ printJob.name }}</p>
-    <p><span class="job-param">State:</span> {{ printJob.state }}</p>
-    <p><progress max="100" [value]="printJob.progress" [attr.data-displayval]="printJob.progress.toFixed(0) + '%'"></progress></p>
+    <div><span class="job-param">Job name:</span> {{ printJob.name }}</div>
+    <div><span class="job-param">State:</span> {{ printJob.state }}</div>
+    <div><progress max="100" [value]="100 / printJob.total * printJob.done" [attr.data-displayval]="(100 / printJob.total * printJob.done).toFixed(0) + '%'"></progress></div>
   </div>
 </div>
 <div class="card-footer">
     <div *ngIf="printJob">
-      <button *ngIf="PrintJob.state == 'Running'" class="btn btn-danger btn-icon" (click)="stopJob()"><clr-icon shape="stop"></clr-icon> Stop</button>
-      <button *ngIf="PrintJob.state == 'Running'" class="btn btn-outline btn-icon" (click)="pauseJob()"><clr-icon shape="pause"></clr-icon> Pause</button>
-      <button *ngIf="PrintJob.state == 'Paused'" class="btn btn-success btn-icon" (click)="resumeJob()"><clr-icon shape="play"></clr-icon> Continue</button>
-      <button *ngIf="PrintJob.state != 'Running'" class="btn btn-success-outline btn-icon" (click)="restartJob()"><clr-icon shape="replay-all"></clr-icon> Restart</button>
+      <button *ngIf="printJob.state == 'Running'" class="btn btn-danger btn-icon" (click)="stopJob()"><clr-icon shape="stop"></clr-icon> Stop</button>
+      <button *ngIf="printJob.state == 'Running'" class="btn btn-outline btn-icon" (click)="pauseJob()"><clr-icon shape="pause"></clr-icon> Pause</button>
+      <button *ngIf="printJob.state == 'Paused'" class="btn btn-success btn-icon" (click)="resumeJob()"><clr-icon shape="play"></clr-icon> Continue</button>
+      <button *ngIf="printJob.state != 'Running'" class="btn btn-success-outline btn-icon" (click)="restartJob()"><clr-icon shape="replay-all"></clr-icon> Restart</button>
     </div>
 </div>

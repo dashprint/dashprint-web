@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { ServerFile } from '../File';
 import { FileService } from '../file.service';
 import { ModalService } from '../modal.service';
 import { GcodeFilePreviewComponent } from '../gcode-file-preview/gcode-file-preview.component';
+import { PrintService } from '../print.service';
+import { HttpEventType } from '@angular/common/http';
 
 @Component({
   selector: 'app-file-manager',
@@ -12,7 +14,10 @@ import { GcodeFilePreviewComponent } from '../gcode-file-preview/gcode-file-prev
 export class FileManagerComponent implements OnInit {
   files: ServerFile[] = [];
 
-  constructor(private fileService: FileService, private modalService: ModalService) { }
+  @Output() filePrinted = new EventEmitter<ServerFile>();
+
+  constructor(private fileService: FileService, private printService: PrintService,
+    private modalService: ModalService) { }
 
   ngOnInit() {
     this.reload();
@@ -25,7 +30,7 @@ export class FileManagerComponent implements OnInit {
   }
 
   printFile(file: ServerFile) {
-    // TODO
+    this.filePrinted.emit(file);
   }
 
   deleteFile(file: ServerFile) {

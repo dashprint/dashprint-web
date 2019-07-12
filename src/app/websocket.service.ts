@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {Printer, PrinterTemperatures} from "./Printer";
 import { Observable } from 'rxjs/Observable';
+import { PrintJob } from './PrintJob';
 
 @Injectable()
 export class WebsocketService {
@@ -37,6 +38,34 @@ export class WebsocketService {
 
         return () => {
             this.doUnsubscribe("Printer." + printer.id + ".state", handler);
+        };
+      });
+  }
+
+  public subscribeToPrinterJobs(printer: Printer, printJob: PrintJob) : Observable<PrintJob> {
+      return Observable.create((observer) => {
+        let handler = (change) => {
+            if (change.hasJob !== undefined && !change.hasJob) {
+                printJob = null;
+
+                observer.next(printJob);
+            } else {
+                if (!printJob)
+                    printJob = change;
+                else {
+                    Object.keys(change).forEach(key => {
+                        printJob[key] = change[key];
+                    });
+                }
+
+                observer.next(printJob);
+            }
+        };
+
+        this.doSubscribe("Printer." + printer.id + ".job", handler);
+
+        return () => {
+            this.doUnsubscribe("Printer." + printer.id + ".job", handler);
         };
       });
   }
