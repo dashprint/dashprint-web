@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewContainerRef, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewContainerRef, ViewChild, ElementRef } from '@angular/core';
 import {Printer, PrinterTemperatures, TemperaturePoint} from './Printer';
 import { PrintService } from './print.service';
 import { ModalService } from './modal.service';
@@ -21,7 +21,7 @@ import { LoginPopupComponent } from './login-popup/login-popup.component';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
   title = 'app';
   printers: Printer[];
 
@@ -33,11 +33,11 @@ export class AppComponent implements OnInit {
   runningEnableDisable: boolean = false;
 
   @ViewChild('modals', {
-    read: ViewContainerRef
+    read: ViewContainerRef, static: false
   }) viewContainerRef: ViewContainerRef;
 
-  @ViewChild("fileManagerComponent") fileManagerComponent: FileManagerComponent;
-  @ViewChild("printJobComponent") printJobComponent: PrintJobComponent;
+  @ViewChild("fileManagerComponent", {static: false}) fileManagerComponent: FileManagerComponent;
+  @ViewChild("printJobComponent", {static: false}) printJobComponent: PrintJobComponent;
 
   constructor(private printService: PrintService, private modalService: ModalService,
     private websocketService: WebsocketService, private fileService: FileService,
@@ -45,14 +45,19 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-      if (!this.authenticationService.hasValidToken()) {
-        let modal = <LoginPopupComponent> this.modalService.showModal(LoginPopupComponent);
-      }
-      // Get printer list
-      this.updatePrinterList();
-      this.websocketService.subscribeToPrinterList(() => this.updatePrinterList());
+    
+  }
 
-      this.modalService.setRootViewContainerRef(this.viewContainerRef);
+  ngAfterViewInit() {
+    this.modalService.setRootViewContainerRef(this.viewContainerRef);
+
+    if (!this.authenticationService.hasValidToken()) {
+      let modal = <LoginPopupComponent> this.modalService.showModal(LoginPopupComponent);
+    }
+
+    // Get printer list
+    this.updatePrinterList();
+    this.websocketService.subscribeToPrinterList(() => this.updatePrinterList());
   }
 
   updatePrinterList() {

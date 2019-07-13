@@ -1,18 +1,27 @@
 <clr-modal [(clrModalOpen)]="visible" [clrModalClosable]="false">
     <h3 class="modal-title">Login</h3>
-    <form class="login">
-      <div class="modal-body">
-          <div class="login-group">
-              <clr-input-container>
-                  <input type="text" name="username" clrInput placeholder="Username" [(ngModel)]="username"/>
+    <div class="modal-body">
+        <form class="login" clrForm>
+            <clr-input-container>
+                <label>Username</label>
+                <input type="text" name="username" clrInput placeholder="Username" [(ngModel)]="username"/>
               </clr-input-container>
               <clr-password-container>
-                  <input type="password" name="password" clrPassword placeholder="Password" [(ngModel)]="password"/>
+                <label>Password</label>
+                <input type="password" name="password" clrPassword placeholder="Password" [(ngModel)]="password"/>
               </clr-password-container>
-          </div>
-      </div>
-      <div class="modal-footer">
-          <button type="button" class="btn btn-primary" (click)="visible = false">Login</button>
-      </div>
-    </form>
-</clr-modal>
+        </form>
+    </div>
+    <div class="modal-footer">
+      <span *ngIf="busy">
+          <span class="spinner spinner-inline">
+              Logging in...
+          </span>
+          <span>
+              Logging in...
+          </span>
+        </span>
+      <button type="button" class="btn btn-primary" (click)="onLoginClicked()" [attr.disabled]="busy ? true : null">Login</button>
+    </div>
+  </clr-modal>
+  

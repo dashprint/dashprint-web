@@ -22,9 +22,9 @@ export class AddprinterComponent extends Modal implements OnInit {
   //printerName: string;
   formPageOne: FormGroup;
   formPageTwo: FormGroup;
-  @ViewChild("finishPage") finishPage: ClrWizardPage;
+  @ViewChild("finishPage", {static: false}) finishPage: ClrWizardPage;
 
-  @ViewChild('printerPreview') printerPreview: ElementRef;
+  @ViewChild('printerPreview', {static: false}) printerPreview: ElementRef;
   printerView: PrinterView;
 
   constructor(private printService: PrintService, private stlLoader: StlmodelService, modalService: ModalService, fb: FormBuilder) {

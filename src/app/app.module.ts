@@ -24,6 +24,7 @@ import { GCodeService } from './gcode.service';
 import { PromptPopupComponent } from './prompt-popup/prompt-popup.component';
 import { LoginPopupComponent } from './login-popup/login-popup.component';
 import { CookieService } from 'ngx-cookie-service';
+import { AuthenticationService } from './authentication.service';
 
 @NgModule({
   declarations: [
@@ -48,14 +49,15 @@ import { CookieService } from 'ngx-cookie-service';
     FormsModule,
     ReactiveFormsModule
   ],
-  providers: [PrintService, ModalService, StlmodelService, WebsocketService, FileService, GCodeService, CookieService],
+  providers: [PrintService, ModalService, StlmodelService, WebsocketService, FileService, GCodeService, CookieService, AuthenticationService],
   bootstrap: [AppComponent],
   entryComponents: [
     AddprinterComponent,
     UploadProgressComponent,
     ErrorPopupComponent,
     PromptPopupComponent,
-    GcodeFilePreviewComponent
+    GcodeFilePreviewComponent,
+    LoginPopupComponent
   ],
 })
 export class AppModule { }

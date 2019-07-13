@@ -23,7 +23,7 @@ export class GcodeFilePreviewComponent extends Modal implements OnInit {
   analyzedGcode: AnalyzedGCode;
   gcodeView: GCodeView;
 
-  @ViewChild('gcodePreview') gcodePreview: ElementRef;
+  @ViewChild('gcodePreview', {static: false}) gcodePreview: ElementRef;
 
   constructor(modalService: ModalService, private fileService: FileService, private gcodeService: GCodeService) {
     super(modalService);

@@ -22,7 +22,7 @@ export class TemperaturesComponent implements OnInit {
 
   temperaturesGraph: ElementRef;
   temperaturesGraphRenderer: TemperatureGraph;
-  @ViewChild("temperaturesGraph") set content(content: ElementRef) {
+  @ViewChild("temperaturesGraph", {static: false}) set content(content: ElementRef) {
     this.temperaturesGraph = content;
 
     if (this.temperaturesGraph) {

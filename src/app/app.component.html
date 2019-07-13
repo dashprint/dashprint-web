@@ -34,12 +34,12 @@
           Switch printer
           <clr-icon shape="caret down"></clr-icon>
         </button>
-        <clr-dropdown-menu [clrPosition]="'bottom-right'">
-          <h4 class="dropdown-header">Configured printers</h4>
-          <button type="button" class="dropdown-item" *ngFor="let printer of printers" (click)="switchPrinter(printer)">{{ printer.name }}</button>
-          <button *ngIf="!printers" type="button" class="dropdown-item disabled">No printers</button>
-          <div class="dropdown-divider"></div>
-          <button type="button" class="dropdown-item" (click)="addPrinter()">Add printer...</button>
+        <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
+          <label class="dropdown-header">Configured printers</label>
+          <button clrDropdownItem type="button" class="dropdown-item" *ngFor="let printer of printers" (click)="switchPrinter(printer)">{{ printer.name }}</button>
+          <button clrDropdownItem *ngIf="!printers" type="button" class="dropdown-item disabled">No printers</button>
+          <div class="dropdown-divider" role="separator"></div>
+          <button clrDropdownItem type="button" class="dropdown-item" (click)="addPrinter()">Add printer...</button>
         </clr-dropdown-menu>
       </clr-dropdown>
 
