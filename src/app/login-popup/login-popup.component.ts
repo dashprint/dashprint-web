@@ -11,6 +11,7 @@ import { AuthenticationService } from '../authentication.service';
 export class LoginPopupComponent extends Modal implements OnInit {
   username: string;
   password: string;
+  errorMessage: string;
   busy = false;
 
   @Output() loginSucceeded = new EventEmitter();
@@ -23,8 +24,16 @@ export class LoginPopupComponent extends Modal implements OnInit {
   }
 
   onLoginClicked() {
-    // TODO: Do login
+    // Do login
     this.busy = true;
-    // this.visible = false;
+    this.authenticationService.authenticate(this.username, this.password).subscribe(token => {
+      this.busy = false;
+
+      if (token) {
+        this.visible = false;
+        this.loginSucceeded.emit();
+      } else
+        this.errorMessage = "Invalid username or password!";
+    });
   }
 }

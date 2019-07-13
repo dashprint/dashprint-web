@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { PrintService } from './print.service';
@@ -25,6 +25,7 @@ import { PromptPopupComponent } from './prompt-popup/prompt-popup.component';
 import { LoginPopupComponent } from './login-popup/login-popup.component';
 import { CookieService } from 'ngx-cookie-service';
 import { AuthenticationService } from './authentication.service';
+import { AuthenticationInterceptor } from 'src/AuthenticationInterceptor';
 
 @NgModule({
   declarations: [
@@ -49,7 +50,14 @@ import { AuthenticationService } from './authentication.service';
     FormsModule,
     ReactiveFormsModule
   ],
-  providers: [PrintService, ModalService, StlmodelService, WebsocketService, FileService, GCodeService, CookieService, AuthenticationService],
+  providers: [
+    PrintService, ModalService, StlmodelService, WebsocketService, FileService, GCodeService, CookieService, AuthenticationService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthenticationInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent],
   entryComponents: [
     AddprinterComponent,

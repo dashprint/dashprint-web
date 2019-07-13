@@ -53,8 +53,14 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     if (!this.authenticationService.hasValidToken()) {
       let modal = <LoginPopupComponent> this.modalService.showModal(LoginPopupComponent);
+      modal.loginSucceeded.subscribe(() => {
+        this.onAfterLogin();
+      });
     }
+  }
 
+  private onAfterLogin() {
+    this.websocketService.openSocket();
     // Get printer list
     this.updatePrinterList();
     this.websocketService.subscribeToPrinterList(() => this.updatePrinterList());

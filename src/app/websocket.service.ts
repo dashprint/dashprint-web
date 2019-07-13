@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {Printer, PrinterTemperatures} from "./Printer";
 import { Observable } from 'rxjs/Observable';
 import { PrintJob } from './PrintJob';
+import { AuthenticationService } from './authentication.service';
 
 @Injectable()
 export class WebsocketService {
@@ -9,8 +10,7 @@ export class WebsocketService {
   private pendingOperations = [];
   private subscriptions = {};
 
-  constructor() {
-    this.openSocket();
+  constructor(private authenticationService: AuthenticationService) {
   }
 
   public subscribeToPrinterList(callback) : () => void {
@@ -133,7 +133,7 @@ export class WebsocketService {
       }
   }
 
-  private openSocket() {
+  public openSocket() {
       var url: string;
 
       if (window.location.protocol == "https")
@@ -141,7 +141,7 @@ export class WebsocketService {
       else
           url = "ws://";
 
-      url += window.location.host + "/websocket";
+      url += window.location.host + "/websocket/" + this.authenticationService.getToken();
 
       this.socket = new WebSocket(url);
 
