@@ -16,11 +16,11 @@
         <form class="login" clrForm>
             <clr-input-container>
                 <label>Username</label>
-                <input type="text" name="username" clrInput placeholder="Username" [(ngModel)]="username"/>
+                <input type="text" name="username" clrInput autofocus placeholder="Username" [(ngModel)]="username" (keyup.enter)="onLoginClicked()" />
               </clr-input-container>
               <clr-password-container>
                 <label>Password</label>
-                <input type="password" name="password" clrPassword placeholder="Password" [(ngModel)]="password"/>
+                <input type="password" name="password" clrPassword placeholder="Password" [(ngModel)]="password" (keyup.enter)="onLoginClicked()" />
               </clr-password-container>
         </form>
     </div>

@@ -42,4 +42,8 @@ export class AuthenticationService {
       return of(<string>null);
     }));
   }
+
+  public getUserData(username: string): Observable<object> {
+    return this.http.get<object>('/api/v1/auth/user/' + username);
+  }
 }

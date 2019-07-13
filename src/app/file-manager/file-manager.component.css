@@ -21,3 +21,8 @@
 	text-overflow: ellipsis;
 }
 
+
+.file-list {
+	max-height: 60ex;
+	overflow-y: auto;
+}

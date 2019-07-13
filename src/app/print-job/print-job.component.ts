@@ -1,9 +1,10 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Printer } from '../Printer';
 import { PrintService } from '../print.service';
 import { WebsocketService } from "../websocket.service";
 import { PrintJob } from '../PrintJob';
 import { Subscription } from 'rxjs/Subscription';
+import { HttpEventType } from '@angular/common/http';
 
 @Component({
   selector: 'app-print-job',
@@ -14,6 +15,8 @@ export class PrintJobComponent implements OnInit {
   _printer: Printer;
   printJob: PrintJob;
   printJobSubscription: Subscription;
+
+  @Output() error = new EventEmitter<string>();
 
   constructor(private printService: PrintService, private websocketService: WebsocketService) { }
 
@@ -57,19 +60,35 @@ export class PrintJobComponent implements OnInit {
   }
 
   public stopJob() {
-    // TODO
+    this.setJobState("Stopped");
   }
 
   public pauseJob() {
-    // TODO
+    this.setJobState("Paused");
   }
 
   public resumeJob() {
-    // TODO
+    this.setJobState("Running");
   }
 
   public restartJob() {
-    // TODO
+    this.printService.printFile(this.printer, this.printJob.name).subscribe(event => {
+      if (event.type == HttpEventType.Response) {
+        if (!event.ok) {
+          this.error.emit(event.body);
+        }
+      }
+    });
+  }
+
+  private setJobState(state: string) {
+    this.printService.setJobState(this.printer, state).subscribe(event => {
+      if (event.type == HttpEventType.Response) {
+        if (!event.ok) {
+          this.error.emit(event.body);
+        }
+      }
+    });
   }
 
 }

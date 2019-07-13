@@ -8,6 +8,11 @@
   <div *ngIf="printJob" class="printjob">
     <div><span class="job-param">Job name:</span> {{ printJob.name }}</div>
     <div><span class="job-param">State:</span> {{ printJob.state }}</div>
+    <clr-alert [clrAlertType]="'danger'" [clrAlertClosable]="false" *ngIf="printJob.state == 'Error'">
+      <clr-alert-item>
+        <span class="alert-text">{{ printJob.error }}</span>
+      </clr-alert-item>
+    </clr-alert>
     <div><progress max="100" [value]="100 / printJob.total * printJob.done" [attr.data-displayval]="(100 / printJob.total * printJob.done).toFixed(0) + '%'"></progress></div>
   </div>
 </div>

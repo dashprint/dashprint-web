@@ -1,0 +1,28 @@
+<clr-modal [(clrModalOpen)]="visible" [clrModalSize]="'lg'">
+<h3 class="modal-title">Settings</h3>
+<div class="modal-body">
+	<clr-tabs clrLayout="vertical">
+		<clr-tab>
+			<button clrTabLink id="link1">Users</button>
+			<clr-tab-content id="content1" *clrIfActive>
+				<div>
+					<b>OctoPrint Compatibility API Key: </b> <span>{{ currentUsersOctoprintKey ? currentUsersOctoprintKey : "Loading..." }}</span>
+				</div>
+				<p>
+					TODO: Users
+				</p>
+			</clr-tab-content>
+		</clr-tab>
+		<clr-tab>
+			<button clrTabLink>TODO</button>
+			<clr-tab-content *clrIfActive>
+			TODO
+			</clr-tab-content>
+		</clr-tab>
+	</clr-tabs>
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn btn-outline" (click)="visible = false">Cancel</button>
+	<button type="button" class="btn btn-primary" (click)="onSaveClicked()">Save</button>
+</div>
+</clr-modal>

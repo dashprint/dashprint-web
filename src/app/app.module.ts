@@ -26,6 +26,7 @@ import { LoginPopupComponent } from './login-popup/login-popup.component';
 import { CookieService } from 'ngx-cookie-service';
 import { AuthenticationService } from './authentication.service';
 import { AuthenticationInterceptor } from 'src/AuthenticationInterceptor';
+import { SettingsPopupComponent } from './settings-popup/settings-popup.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { AuthenticationInterceptor } from 'src/AuthenticationInterceptor';
     GcodeFilePreviewComponent,
     DurationPipe,
     PromptPopupComponent,
-    LoginPopupComponent
+    LoginPopupComponent,
+    SettingsPopupComponent
   ],
   imports: [
     BrowserModule,
@@ -65,7 +67,8 @@ import { AuthenticationInterceptor } from 'src/AuthenticationInterceptor';
     ErrorPopupComponent,
     PromptPopupComponent,
     GcodeFilePreviewComponent,
-    LoginPopupComponent
+    LoginPopupComponent,
+    SettingsPopupComponent
   ],
 })
 export class AppModule { }

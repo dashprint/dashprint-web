@@ -17,6 +17,7 @@ export class FileManagerComponent implements OnInit {
   files: ServerFile[] = [];
 
   @Output() filePrinted = new EventEmitter<ServerFile>();
+  @Output() error = new EventEmitter<string>();
 
   constructor(private fileService: FileService, private printService: PrintService,
     private modalService: ModalService) { }
@@ -58,8 +59,7 @@ export class FileManagerComponent implements OnInit {
   }
 
   private showErrorMessage(text) {
-    let modal = <ErrorPopupComponent> this.modalService.showModal(ErrorPopupComponent);
-    modal.message = text;
+    this.error.emit(text);
   }
 
   displayFile(file: ServerFile) {

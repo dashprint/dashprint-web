@@ -15,6 +15,7 @@ import { PrintJobComponent } from './print-job/print-job.component';
 import { PromptPopupComponent } from './prompt-popup/prompt-popup.component';
 import { AuthenticationService } from './authentication.service';
 import { LoginPopupComponent } from './login-popup/login-popup.component';
+import { SettingsPopupComponent } from './settings-popup/settings-popup.component';
 
 @Component({
   selector: 'app-root',
@@ -242,5 +243,9 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   onFilePrinted(file: ServerFile) {
     this.doPrintFile(file.name);
+  }
+
+  openSettings() {
+    let modal = <SettingsPopupComponent> this.modalService.showModal(SettingsPopupComponent);
   }
 }

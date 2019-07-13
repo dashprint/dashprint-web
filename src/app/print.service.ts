@@ -101,15 +101,9 @@ export class PrintService {
     }
 
     getPrintJob(printer: Printer) : Observable<PrintJob> {
-        return this.http.get<any>('/api/v1/printers/' + printer.id + '/job')
-        .map(data => {
-            let job = new PrintJob();
-
-            job.name = data.name;
-
-            return job;
-        })
-        .catch(err => of<PrintJob>(null));
+        return this.http.get<PrintJob>('/api/v1/printers/' + printer.id + '/job', { observe: 'response' }).catch(err => {
+            return of(null);
+        });
     }
 
     printFile(printer: Printer, file: string) : Observable<HttpEvent<any>> {
@@ -117,6 +111,15 @@ export class PrintService {
             file: file
         };
         let req = new HttpRequest('POST', '/api/v1/printers/' + printer.id + '/job', data);
+        return this.http.request(req);
+    }
+
+    setJobState(printer: Printer, state: string) : Observable<HttpEvent<any>> {
+        let data = {
+            state: state
+        };
+
+        let req = new HttpRequest('PUT', '/api/v1/printers/' + printer.id + '/job', data);
         return this.http.request(req);
     }
 

@@ -24,6 +24,9 @@ export class LoginPopupComponent extends Modal implements OnInit {
   }
 
   onLoginClicked() {
+    if (this.busy)
+      return;
+      
     // Do login
     this.busy = true;
     this.authenticationService.authenticate(this.username, this.password).subscribe(token => {

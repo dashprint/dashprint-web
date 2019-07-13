@@ -12,11 +12,29 @@
     </div>
 
     <div class="header-actions">
-      <a href="javascript://" class="nav-link nav-icon">
-        <clr-icon shape="cog"></clr-icon>
+      <a href="javascript://" class="nav-link nav-icon" (click)="openSettings()">
+          <clr-icon shape="cog"></clr-icon>
       </a>
     </div>
   </clr-header>
+
+  <div class="subnav">
+      <ul class="nav">
+        <li class="nav-item" *ngFor="let printer of printers">
+          <a class="nav-link" [ngClass]="{'active': printer === selectedPrinter}" href="#" (click)="switchPrinter(printer)">{{ printer.name }}</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" (click)="addPrinter()">
+                <clr-tooltip>
+                  <clr-icon clrTooltipTrigger shape="plus-circle"></clr-icon>
+                  <clr-tooltip-content clrPosition="bottom-right" clrSize="sm" *clrIfOpen>
+                      <span>Add printer...</span>
+                  </clr-tooltip-content>
+                </clr-tooltip>
+            </a>
+        </li>
+      </ul>
+  </div>
 
   <div class="content-container">
 
@@ -27,21 +45,6 @@
           [ngClass]="{'drag-over': dragOver}">
 
       <div class="modal-backdrop" *ngIf="dragOver"><div id="fileupload-notif">Drop a GCODE file</div></div>
-
-      <div class="printer-header">
-        <clr-dropdown [clrCloseMenuOnItemClick]="true" class="printer-switch">
-        <button class="btn btn-link" clrDropdownTrigger>
-          Switch printer
-          <clr-icon shape="caret down"></clr-icon>
-        </button>
-        <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
-          <label class="dropdown-header">Configured printers</label>
-          <button clrDropdownItem type="button" class="dropdown-item" *ngFor="let printer of printers" (click)="switchPrinter(printer)">{{ printer.name }}</button>
-          <button clrDropdownItem *ngIf="!printers" type="button" class="dropdown-item disabled">No printers</button>
-          <div class="dropdown-divider" role="separator"></div>
-          <button clrDropdownItem type="button" class="dropdown-item" (click)="addPrinter()">Add printer...</button>
-        </clr-dropdown-menu>
-      </clr-dropdown>
 
       <h2>
         {{ selectedPrinter.name }}
@@ -65,15 +68,13 @@
 
         <div class="printer-job card">
           <div class="card-header">Print Job</div>
-          <app-print-job #printJobComponent [printer]="selectedPrinter"></app-print-job>
+          <app-print-job #printJobComponent [printer]="selectedPrinter" (error)="showErrorMessage($event)"></app-print-job>
         </div>
 
         <div class="file-manager card">
             <div class="card-header">File Manager</div>
-            <app-file-manager #fileManagerComponent (filePrinted)="onFilePrinted($event)"></app-file-manager>
+            <app-file-manager #fileManagerComponent (filePrinted)="onFilePrinted($event)" (error)="showErrorMessage($event)"></app-file-manager>
         </div>
-      </div>
-
       </div>
     </main>
 
