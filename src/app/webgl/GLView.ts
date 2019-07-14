@@ -132,6 +132,8 @@ export class GLView {
 
           // https://learnopengl.com/Lighting/Basic-Lighting
           // https://github.com/JoeyDeVries/LearnOpenGL/blob/master/src/2.lighting/2.1.basic_lighting_diffuse/2.1.basic_lighting.fs
+          // TODO: Add specular light
+          // https://github.com/JoeyDeVries/LearnOpenGL/blob/master/src/2.lighting/2.2.basic_lighting_specular/2.2.basic_lighting.fs
         const fsSource = `#version 300 es
             precision mediump float;
 

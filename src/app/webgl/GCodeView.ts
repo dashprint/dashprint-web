@@ -1,10 +1,13 @@
-import { GLView, ProgramInfo } from './GLView';
+import { GLView, ProgramInfo, LightingProgramInfo } from './GLView';
 import { AnalyzedGCode, GCodeLayer } from '../gcode.service';
 import { Renderable } from './Renderable';
 import * as vec3 from "gl-matrix-vec3";
 import { Triangles } from './Triangles';
 
 const mmScale = 200;
+
+// TODO: Lighting
+// Look at https://github.com/jscad/OpenJSCAD.org/blob/master/packages/web/src/ui/viewer/jscad-viewer-lightgl.js
 
 export class GCodeView extends GLView {
 	private gcode: AnalyzedGCode = null;
@@ -59,19 +62,21 @@ const CIRCLE_FN = 10;
 
 class RenderableLayer extends Renderable {
 	private vertices: Float32Array;
+	private normals: Float32Array;
 	private indicesTriangleFans: Uint16Array;
 	private indicesTriangleStrips: Uint16Array;
 
 	private vertexBuffer: WebGLBuffer;
 	private indexFanBuffer: WebGLBuffer;
 	private indexStripBuffer: WebGLBuffer;
+	private normalBuffer: WebGLBuffer;
 
 	// Next positions during vertex generation
 	private verticesIndex = 0;
 	private fanIndicesIndex = 0;
 	private stripIndicesIndex = 0;
 
-	public color: Float32Array = new Float32Array([0.5, 0.5, 0.5, 0.5]);
+	public color: Float32Array = new Float32Array([0, 0, 1, 1]);
 
 	constructor(private layer: GCodeLayer, private thickness: number) {
 		super();
@@ -79,6 +84,8 @@ class RenderableLayer extends Renderable {
 		let separateExtrusionCount = this.countSeparateExtrusions();
 
 		this.vertices = new Float32Array((CIRCLE_FN+1)*3 * (layer.lines.length*2));
+		this.normals = new Float32Array(this.vertices.length);
+
 		this.indicesTriangleFans = new Uint16Array(2*layer.lines.length*(CIRCLE_FN+2)); // +1 for primitive restart
 		this.indicesTriangleStrips = new Uint16Array((layer.lines.length*2-separateExtrusionCount)*(CIRCLE_FN+1)*2); // +1 for primitive restart
 
@@ -99,6 +106,12 @@ class RenderableLayer extends Renderable {
 					this.produceConnectingLines();
 				}
 			}
+		}
+
+		for (let i = 0; i < this.normals.length/3; i++) {
+			this.normals[i*3] = 0;
+			this.normals[i*3+1] = 1;
+			this.normals[i*3+2] = 0;
 		}
 	}
 
@@ -208,15 +221,20 @@ class RenderableLayer extends Renderable {
 		vec3.normalize(vecOut, vecOut);
 	}
 
-	public render(gl: WebGLRenderingContext, programInfo: ProgramInfo) {
+	public renderWithLighting(gl: WebGLRenderingContext, programInfo: LightingProgramInfo) {
 		super.render(gl, programInfo);
 
-		gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-
 		gl.enableVertexAttribArray(programInfo.vertexPosition);
-        gl.vertexAttribPointer(programInfo.vertexPosition, 3, gl.FLOAT, false, 0, 0);
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+		gl.vertexAttribPointer(programInfo.vertexPosition, 3, gl.FLOAT, false, 0, 0);
+		
+		gl.enableVertexAttribArray(programInfo.normal);
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
+        gl.vertexAttribPointer(programInfo.normal, 3, gl.FLOAT, false, 0, 0);
 
 		gl.vertexAttrib4fv(programInfo.vertexColor, this.color);
+		gl.uniform4f(programInfo.lightColor, 1, 1, 1, 1);
+		gl.uniform4f(programInfo.lightPos, 1, 2, 3, 0);
 
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexFanBuffer);
 		gl.drawElements(gl.TRIANGLE_FAN, this.indicesTriangleFans.length, gl.UNSIGNED_SHORT, 0);
@@ -235,10 +253,14 @@ class RenderableLayer extends Renderable {
 		super.allocate(gl);
 
         if (!this.vertexBuffer)
-            this.vertexBuffer = gl.createBuffer();
+			this.vertexBuffer = gl.createBuffer();
+		if (!this.normalBuffer)
+            this.normalBuffer = gl.createBuffer();
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.STATIC_DRAW);
+		gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.STATIC_DRAW);
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, this.normals, gl.STATIC_DRAW);
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
 		if (!this.indexFanBuffer) {
@@ -257,6 +279,10 @@ class RenderableLayer extends Renderable {
 		if (this.vertexBuffer) {
             gl.deleteBuffer(this.vertexBuffer);
             this.vertexBuffer = null;
+		}
+		if (this.normalBuffer) {
+            gl.deleteBuffer(this.normalBuffer);
+            this.normalBuffer = null;
 		}
 		
 		if (this.indexFanBuffer) {

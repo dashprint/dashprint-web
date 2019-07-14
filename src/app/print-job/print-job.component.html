@@ -13,7 +13,8 @@
         <span class="alert-text">{{ printJob.error }}</span>
       </clr-alert-item>
     </clr-alert>
-    <div><progress max="100" [value]="100 / printJob.total * printJob.done" [attr.data-displayval]="(100 / printJob.total * printJob.done).toFixed(0) + '%'"></progress></div>
+    <div *ngIf="printJob.state == 'Running' || printJob.state == 'Paused'"><progress max="100" [value]="100 / printJob.total * printJob.done" [attr.data-displayval]="(100 / printJob.total * printJob.done).toFixed(0) + '%'"></progress></div>
+    <div><span class="job-param">Time elapsed:</span> {{ printJob.elapsed | duration }}</div>
   </div>
 </div>
 <div class="card-footer">

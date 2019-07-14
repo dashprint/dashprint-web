@@ -4,4 +4,5 @@ export class PrintJob {
 	total: number;
 	state: string;
 	error: string;
+	elapsed: number;
 }
