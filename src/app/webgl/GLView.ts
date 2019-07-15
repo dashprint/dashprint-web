@@ -148,7 +148,7 @@ export class GLView {
 
             void main(void) {
                 // Ambient light
-                float ambientStrength = 0.1;
+                float ambientStrength = 0.25;
                 vec4 ambient = ambientStrength * uLightColor;
 
                 // Diffuse light
@@ -158,6 +158,7 @@ export class GLView {
                 vec4 diffuse = diff * uLightColor;
 
                 vec4 result = (ambient + diffuse) * vColor;
+                result.w = vColor.w;
                 fragColor = result;
             }
         `;
@@ -249,7 +250,7 @@ export class GLView {
 
         const fieldOfView = 45 * Math.PI / 180;   // in radians
         var aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-        const zNear = 0.1;
+        const zNear = 0.001;
         const zFar = 10.0;
         const projectionMatrix = mat4.create();
 
@@ -285,6 +286,10 @@ export class GLView {
             this.programInfoLight.projectionMatrix,
             false,
             projectionMatrix);
+
+        let camPos = this.camera.position();
+        gl.uniform4f(this.programInfoLight.lightPos, camPos[0], camPos[1], camPos[2], 1);
+        // gl.uniform4f(this.programInfoLight.lightPos, 1.2, 1, 2, 1);
 
         this.camera.apply(this.gl, this.programInfoLight);
 

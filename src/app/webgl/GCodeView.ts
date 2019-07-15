@@ -3,15 +3,14 @@ import { AnalyzedGCode, GCodeLayer } from '../gcode.service';
 import { Renderable } from './Renderable';
 import * as vec3 from "gl-matrix-vec3";
 import { Triangles } from './Triangles';
+import { Lines } from './Lines';
 
 const mmScale = 200;
-
-// TODO: Lighting
-// Look at https://github.com/jscad/OpenJSCAD.org/blob/master/packages/web/src/ui/viewer/jscad-viewer-lightgl.js
 
 export class GCodeView extends GLView {
 	private gcode: AnalyzedGCode = null;
 	private layers: RenderableLayer[];
+	private axes: Lines;
 
 	constructor(canvas: HTMLCanvasElement) {
 		super(canvas);
@@ -25,8 +24,16 @@ export class GCodeView extends GLView {
 		let scale = new Float32Array([1.5, 1.5, 1.5]);
 
 		basePlane.setScale(scale);
+		basePlane.position[0] = scale[0]/2;
+		basePlane.position[2] = -scale[2]/2;
 		
 		this.addRenderable(basePlane);
+
+		this.axes = new Lines([], [], 2);
+        this.axes.addLine(0, 0, 0, 0.1, 0, 0, GLView.glColor(255, 0, 0, 255));
+        this.axes.addLine(0, 0, 0, 0, 0, -0.1, GLView.glColor(0, 255, 0, 255));
+        this.axes.addLine(0, 0, 0, 0, 0.1, 0, GLView.glColor(0, 0, 255, 255));
+        this.addRenderable(this.axes);
 	}
 
 	public show(gcode: AnalyzedGCode) {
@@ -86,8 +93,8 @@ class RenderableLayer extends Renderable {
 		this.vertices = new Float32Array((CIRCLE_FN+1)*3 * (layer.lines.length*2));
 		this.normals = new Float32Array(this.vertices.length);
 
-		this.indicesTriangleFans = new Uint16Array(2*layer.lines.length*(CIRCLE_FN+2)); // +1 for primitive restart
-		this.indicesTriangleStrips = new Uint16Array((layer.lines.length*2-separateExtrusionCount)*(CIRCLE_FN+1)*2); // +1 for primitive restart
+		this.indicesTriangleFans = new Uint16Array(2*layer.lines.length*(CIRCLE_FN+3)); // +1 for primitive restart
+		this.indicesTriangleStrips = new Uint16Array((layer.lines.length*2-separateExtrusionCount)*(CIRCLE_FN+3)*2); // +1 for primitive restart
 
 		let normal = vec3.create();
 		let tmp1 = vec3.create();
@@ -107,12 +114,6 @@ class RenderableLayer extends Renderable {
 				}
 			}
 		}
-
-		for (let i = 0; i < this.normals.length/3; i++) {
-			this.normals[i*3] = 0;
-			this.normals[i*3+1] = 1;
-			this.normals[i*3+2] = 0;
-		}
 	}
 
 	// Primitives restart in WebGL: https://github.com/KhronosGroup/glTF/issues/1142
@@ -122,9 +123,9 @@ class RenderableLayer extends Renderable {
 		const nextCircleIndex = this.verticesIndex/3 + 1; // +1 to skip the center point
 
 		// CCW order
-		for (let i = 0; i < CIRCLE_FN; i++) {
-			this.indicesTriangleStrips[this.stripIndicesIndex++] = nextCircleIndex + i;
-			this.indicesTriangleStrips[this.stripIndicesIndex++] = prevCircleIndex + i;
+		for (let i = 0; i <= CIRCLE_FN; i++) {
+			this.indicesTriangleStrips[this.stripIndicesIndex++] = prevCircleIndex + i % CIRCLE_FN;
+			this.indicesTriangleStrips[this.stripIndicesIndex++] = nextCircleIndex + (CIRCLE_FN-i) % CIRCLE_FN;
 		}
 
 		// Primitives restart
@@ -158,9 +159,16 @@ class RenderableLayer extends Renderable {
 		let tmp2 = vec3.create();
 
 		// Make a perpendicular vector to our plane normal
-		RenderableLayer.findPerpendicular(tmp1, normal);
+		//RenderableLayer.findPerpendicular(tmp1, normal);
 		// Make another orthogonal vector
-		vec3.cross(tmp2, tmp1, normal);
+		//vec3.cross(tmp2, tmp1, normal);
+		tmp1[0] = 0;
+		tmp1[1] = 1;
+		tmp1[2] = 0;
+
+		tmp2[0] = normal[2];
+		tmp2[1] = normal[1];
+		tmp2[2] = normal[0];
 
 		// Generate a circle
 		const r = this.thickness/2;
@@ -168,12 +176,19 @@ class RenderableLayer extends Renderable {
 
 		// center point
 		this.indicesTriangleFans[this.fanIndicesIndex++] = this.verticesIndex / 3;
+
+		this.normals[this.verticesIndex] = normal[0];
 		this.vertices[this.verticesIndex++] = center[0];
+		this.normals[this.verticesIndex] = normal[1];
 		this.vertices[this.verticesIndex++] = center[1];
+		this.normals[this.verticesIndex] = normal[2];
 		this.vertices[this.verticesIndex++] = center[2];
 
+		let vertexNormal = vec3.create();
+		let vertexDiff = vec3.create();
+
 		for (let i = 0; i < CIRCLE_FN; i++) {
-			let fi = -(2*Math.PI)/CIRCLE_FN*i; // CCW direction
+			let fi = (2*Math.PI)/CIRCLE_FN*i; // CCW direction
 			if (!endCircle)
 				fi = -fi;
 
@@ -181,11 +196,22 @@ class RenderableLayer extends Renderable {
 			let s = r * Math.sin(fi);
 
 			this.indicesTriangleFans[this.fanIndicesIndex++] = this.verticesIndex / 3;
-			this.vertices[this.verticesIndex++] = center[0] + c*tmp1[0] + s*tmp2[0];
-			this.vertices[this.verticesIndex++] = center[1] + c*tmp1[1] + s*tmp2[1];
-			this.vertices[this.verticesIndex++] = center[2] + c*tmp1[2] + s*tmp2[2];
+
+			vertexDiff[0] = c*tmp1[0] + s*tmp2[0];
+			vertexDiff[1] = c*tmp1[1] + s*tmp2[1];
+			vertexDiff[2] = c*tmp1[2] + s*tmp2[2];
+
+			vec3.normalize(vertexNormal, vertexDiff);
+
+			this.normals[this.verticesIndex] = vertexNormal[0];
+			this.vertices[this.verticesIndex++] = center[0] + vertexDiff[0];
+			this.normals[this.verticesIndex] = vertexNormal[1];
+			this.vertices[this.verticesIndex++] = center[1] + vertexDiff[1];
+			this.normals[this.verticesIndex] = vertexNormal[2];
+			this.vertices[this.verticesIndex++] = center[2] + vertexDiff[2];
 		}
 
+		this.indicesTriangleFans[this.fanIndicesIndex++] = this.verticesIndex / 3 - CIRCLE_FN;
 		// primitives restart
 		this.indicesTriangleFans[this.fanIndicesIndex++] = 0xffff;
 	}
@@ -214,15 +240,10 @@ class RenderableLayer extends Renderable {
 		vec3.normalize(normal, normal);
 	}
 
-	private static findPerpendicular(vecOut, vecIn) {
-		vecOut[0] = 1;
-		vecOut[1] = 1;
-		vecOut[2] = vecIn[0] + vecIn[1];
-		vec3.normalize(vecOut, vecOut);
-	}
-
 	public renderWithLighting(gl: WebGLRenderingContext, programInfo: LightingProgramInfo) {
 		super.render(gl, programInfo);
+
+		gl.enable(gl.CULL_FACE);
 
 		gl.enableVertexAttribArray(programInfo.vertexPosition);
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
@@ -234,7 +255,6 @@ class RenderableLayer extends Renderable {
 
 		gl.vertexAttrib4fv(programInfo.vertexColor, this.color);
 		gl.uniform4f(programInfo.lightColor, 1, 1, 1, 1);
-		gl.uniform4f(programInfo.lightPos, 1, 2, 3, 0);
 
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexFanBuffer);
 		gl.drawElements(gl.TRIANGLE_FAN, this.indicesTriangleFans.length, gl.UNSIGNED_SHORT, 0);
@@ -247,6 +267,7 @@ class RenderableLayer extends Renderable {
 		//	console.error("WebGL error #2");
 		
 		gl.bindBuffer(gl.ARRAY_BUFFER, null);
+		gl.disable(gl.CULL_FACE);
 	}
 
 	allocate(gl: WebGLRenderingContext) {

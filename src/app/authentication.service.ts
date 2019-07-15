@@ -57,7 +57,7 @@ export class AuthenticationService {
   }
 
   private refreshToken(): void {
-    this.http.post<object>('/api/v1/auth/refreshToken', '', { observe: 'response' })
+    this.http.post<object>('/api/v1/auth/refreshToken', ''/*, { observe: 'response' }*/)
       .catch(err => {
         return of(null);
       }).subscribe(obj => {

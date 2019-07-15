@@ -51,6 +51,16 @@ export class Camera {
             this.onCameraChange();
     }
 
+    public position() {
+        let vec = vec3.create();
+
+        vec[2] = this._distance;
+        vec3.rotateX(vec, vec, this._lookAt, -this._yAngle * Math.PI / 180);
+        vec3.rotateY(vec, vec, this._lookAt, -this._xAngle * Math.PI / 180);
+
+        return vec;
+    }
+
     get distance(): number {
         return this._distance;
     }
