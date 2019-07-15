@@ -10,10 +10,12 @@ export class Camera {
     private _distance: number = 5;
     private up: Float32Array = new Float32Array([0, 1, 0]);
     private matrix: Float32Array;
-    private mousePressed: boolean = false;
+    private mouseRotatePressed: boolean = false;
+    private mouseMovePressed: boolean = false;
 
     public onCameraChange: () => void;
-    public cameraMoveButton: number = 2;
+    public cameraRotateButton: number = 2;
+    public cameraMoveButton: number = -1;
 
     constructor(private canvas?: HTMLCanvasElement) {
         this.updateMatrix();
@@ -37,11 +39,7 @@ export class Camera {
     }
 
     private updateMatrix() {
-        let vec = vec3.create();
-
-        vec[2] = this._distance;
-        vec3.rotateX(vec, vec, this._lookAt, -this._yAngle * Math.PI / 180);
-        vec3.rotateY(vec, vec, this._lookAt, -this._xAngle * Math.PI / 180);
+        let vec = this.position();
 
         let hadMatrix = this.matrix;
         this.matrix = mat4.create();
@@ -55,8 +53,9 @@ export class Camera {
         let vec = vec3.create();
 
         vec[2] = this._distance;
-        vec3.rotateX(vec, vec, this._lookAt, -this._yAngle * Math.PI / 180);
-        vec3.rotateY(vec, vec, this._lookAt, -this._xAngle * Math.PI / 180);
+        vec3.rotateX(vec, vec, [0, 0, 0], -this._yAngle * Math.PI / 180);
+        vec3.rotateY(vec, vec, [0, 0, 0], -this._xAngle * Math.PI / 180);
+        vec3.add(vec, vec, this._lookAt);
 
         return vec;
     }
@@ -114,30 +113,57 @@ export class Camera {
     }
 
     private handleMouseDown(e: MouseEvent) {
-        if (e.button == this.cameraMoveButton) {
-            this.mousePressed = true;
+        if (this.mouseRotatePressed || this.mouseMovePressed)
+            return;
+
+        if (e.button == this.cameraRotateButton) {
+            this.mouseRotatePressed = true;
+            e.preventDefault();
+            return false;
+        } else if (e.button == this.cameraMoveButton) {
+            this.mouseMovePressed = true;
             e.preventDefault();
             return false;
         }
     }
 
     private handleMouseMove(e: MouseEvent) {
-        if (this.mousePressed) {
+        if (this.mouseRotatePressed) {
             this.xAngle += e.movementX/this.canvas.width*180;
             this.yAngle += e.movementY/this.canvas.height*180;
+            e.preventDefault();
+            return false;
+        } else if (this.mouseMovePressed) {
+            let matrix = mat4.create();
+            let motion = vec3.create();
+
+            //mat4.translate(matrix, matrix, [-e.movementX/this.canvas.width, e.movementY/this.canvas.height, 0]);
+
+            motion[0] = -e.movementX/this.canvas.width*2;
+            motion[1] = e.movementY/this.canvas.height*2;
+
+            mat4.rotateX(matrix, matrix, this._yAngle * Math.PI / 180);
+            mat4.rotateY(matrix, matrix, -this._xAngle * Math.PI / 180);
+
+            vec3.transformMat4(motion, motion, matrix);
+            vec3.add(this._lookAt, this._lookAt, motion);
+            this.updateMatrix();
             e.preventDefault();
             return false;
         }
     }
 
     private handleMouseUp(e: MouseEvent) {
-        if (e.button == this.cameraMoveButton) {
-            this.mousePressed = false;
+        if (e.button == this.cameraRotateButton) {
+            this.mouseRotatePressed = false;
+            e.preventDefault();
+        } else if (e.button == this.cameraMoveButton) {
+            this.mouseMovePressed = false;
             e.preventDefault();
         }
     }
 
     private handleMouseLeave(e: MouseEvent) {
-        this.mousePressed = false;
+        this.mouseRotatePressed = this.mouseMovePressed = false;
     }
 }

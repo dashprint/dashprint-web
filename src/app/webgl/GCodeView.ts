@@ -14,7 +14,12 @@ export class GCodeView extends GLView {
 
 	constructor(canvas: HTMLCanvasElement) {
 		super(canvas);
-		this.camera.cameraMoveButton = 0; // left button
+		this.camera.cameraRotateButton = 0; // left button
+		this.camera.cameraMoveButton = 2; // right button
+		this.camera.lookAt[0] = 1.5/2;
+		this.camera.lookAt[1] = 0;
+		this.camera.lookAt[2] = -1.5/2;
+		this.camera.xAngle = 0;
 	}
 
 	fillScene() {
@@ -83,7 +88,7 @@ class RenderableLayer extends Renderable {
 	private fanIndicesIndex = 0;
 	private stripIndicesIndex = 0;
 
-	public color: Float32Array = new Float32Array([0, 0, 1, 1]);
+	public color: Float32Array = new Float32Array([0.3, 0.3, 1, 1]);
 
 	constructor(private layer: GCodeLayer, private thickness: number) {
 		super();
@@ -177,11 +182,11 @@ class RenderableLayer extends Renderable {
 		// center point
 		this.indicesTriangleFans[this.fanIndicesIndex++] = this.verticesIndex / 3;
 
-		this.normals[this.verticesIndex] = normal[0];
+		this.normals[this.verticesIndex] = endCircle ? normal[0] : -normal[0];
 		this.vertices[this.verticesIndex++] = center[0];
-		this.normals[this.verticesIndex] = normal[1];
+		this.normals[this.verticesIndex] = endCircle ? normal[1] : -normal[1];
 		this.vertices[this.verticesIndex++] = center[1];
-		this.normals[this.verticesIndex] = normal[2];
+		this.normals[this.verticesIndex] = endCircle ? normal[2] : -normal[2];
 		this.vertices[this.verticesIndex++] = center[2];
 
 		let vertexNormal = vec3.create();
@@ -197,7 +202,7 @@ class RenderableLayer extends Renderable {
 
 			this.indicesTriangleFans[this.fanIndicesIndex++] = this.verticesIndex / 3;
 
-			vertexDiff[0] = c*tmp1[0] + s*tmp2[0];
+			vertexDiff[0] = -(c*tmp1[0] + s*tmp2[0]);
 			vertexDiff[1] = c*tmp1[1] + s*tmp2[1];
 			vertexDiff[2] = c*tmp1[2] + s*tmp2[2];
 

@@ -6,7 +6,7 @@
           <p><progress max="100" [value]="downloadProgress" [attr.data-displayval]="downloadProgress + '%'"></progress></p>
         </div>
         <div [hidden]="loading || !fileData">
-          <button class="btn" (click)="saveFile()">Save</button>
+          <button class="btn" (click)="saveFile()"><clr-icon shape="download"></clr-icon> Save</button>
           <table>
             <tr><th>Layer count</th><td *ngIf="analyzedGcode">{{ analyzedGcode.layers.length }}</td></tr>
             <tr>
