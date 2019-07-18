@@ -3,6 +3,8 @@
 </div>
     
 <div class="card-footer">
+    <button id="set-temperatures" *ngIf="temperatures && temperatures.T" class="btn btn-primary" (click)="setTargetTemperatures()">Set</button>
+    
       <div *ngIf="temperatures && temperatures.B" class="clr-form-control">
         <label for="bed-target" class="clr-control-label">Bed Target Temp</label>
         <div class="clr-control-container clr-error">
@@ -27,6 +29,5 @@
         </div>
       </div>
     
-      <button *ngIf="temperatures && temperatures.T" class="btn btn-primary" (click)="setTargetTemperatures()">Set</button>
   </div>
   

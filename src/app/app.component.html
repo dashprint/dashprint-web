@@ -75,6 +75,14 @@
             <div class="card-header">File Manager</div>
             <app-file-manager #fileManagerComponent (filePrinted)="onFilePrinted($event)" (error)="showErrorMessage($event)"></app-file-manager>
         </div>
+
+        <div class="file-manager card">
+          <div class="card-header">Camera</div>
+          <app-camera #cameraComponent>
+            <div no-camera>No camera set.</div>
+            <div with-camera></div>
+          </app-camera>
+        </div>
       </div>
     </main>
 

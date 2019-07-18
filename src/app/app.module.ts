@@ -27,6 +27,8 @@ import { CookieService } from 'ngx-cookie-service';
 import { AuthenticationService } from './authentication.service';
 import { AuthenticationInterceptor } from 'src/AuthenticationInterceptor';
 import { SettingsPopupComponent } from './settings-popup/settings-popup.component';
+import { CameraService } from './camera.service';
+import { CameraComponent } from './camera/camera.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +44,8 @@ import { SettingsPopupComponent } from './settings-popup/settings-popup.componen
     DurationPipe,
     PromptPopupComponent,
     LoginPopupComponent,
-    SettingsPopupComponent
+    SettingsPopupComponent,
+    CameraComponent
   ],
   imports: [
     BrowserModule,
@@ -53,7 +56,7 @@ import { SettingsPopupComponent } from './settings-popup/settings-popup.componen
     ReactiveFormsModule
   ],
   providers: [
-    PrintService, ModalService, StlmodelService, WebsocketService, FileService, GCodeService, CookieService, AuthenticationService,
+    PrintService, ModalService, StlmodelService, WebsocketService, FileService, GCodeService, CookieService, AuthenticationService, CameraService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthenticationInterceptor,

@@ -1,0 +1,10 @@
+<div class="camera">
+	<ng-template [ngIf]="camera">
+		<video #videoPlayer (dblclick)="toggleFullscreen()" autoplay>
+			<source src="{{videoUrl}}" type="video/mp4" />
+		</video>
+		<ng-content select="[with-camera]"></ng-content>
+	</ng-template>
+
+	<ng-content *ngIf="!camera" select="[no-camera]"></ng-content>
+</div>

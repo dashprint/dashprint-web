@@ -3,11 +3,17 @@
     margin: 1ex;
 }
 
-.printer-temperatures .clr-form-control {
+.card-footer .clr-form-control {
     display: inline-block;
     padding: 2ex;
 }
 
-.printer-temperatures .clr-input {
-    width: 5rem;
+.card-footer .clr-input {
+    width: 10ex;
+    margin-top: 0;
+}
+
+#set-temperatures {
+    float: right;
+    margin-top: 1rem;
 }

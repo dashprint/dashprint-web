@@ -16,6 +16,8 @@ import { PromptPopupComponent } from './prompt-popup/prompt-popup.component';
 import { AuthenticationService } from './authentication.service';
 import { LoginPopupComponent } from './login-popup/login-popup.component';
 import { SettingsPopupComponent } from './settings-popup/settings-popup.component';
+import { CameraService, Camera } from './camera.service';
+import { CameraComponent } from './camera/camera.component';
 
 @Component({
   selector: 'app-root',
@@ -39,10 +41,12 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   @ViewChild("fileManagerComponent", {static: false}) fileManagerComponent: FileManagerComponent;
   @ViewChild("printJobComponent", {static: false}) printJobComponent: PrintJobComponent;
+  @ViewChild("cameraComponent", {static: false}) cameraComponent: CameraComponent;
 
   constructor(private printService: PrintService, private modalService: ModalService,
     private websocketService: WebsocketService, private fileService: FileService,
-    private authenticationService: AuthenticationService) {
+    private authenticationService: AuthenticationService,
+    private cameraService: CameraService) {
   }
 
   ngOnInit() {
@@ -102,8 +106,15 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     this.selectedPrinter = printer;
 
-    this.selectedPrinterSubscription = this.websocketService
-        .subscribeToPrinter(this.selectedPrinter).subscribe((printer: Printer) => {});
+    if (printer) {
+      this.selectedPrinterSubscription = this.websocketService
+          .subscribeToPrinter(this.selectedPrinter).subscribe((printer: Printer) => {});
+
+      this.cameraService.detectCameras().subscribe((cameras: Camera[]) => {
+        if (cameras && cameras.length > 0)
+          this.cameraComponent.camera = cameras[0];
+      });
+    }
   }
 
   onFileDrop(event: DragEvent) {
