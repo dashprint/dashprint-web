@@ -1,0 +1,20 @@
+<div class="card-block">
+	<ul class="gcode-events" #gcodeListElement>
+	  <li *ngFor="let event of gcodeEvents; let i = index" class="gcode-event" [ngClass]="{'incoming': !event.outgoing, 'outgoing':event.outgoing, 'tagged':!!event.tag }">
+		<div class="separator" *ngIf="i &gt; 0 && event.commandId !== gcodeEvents[i-1].commandId"></div>
+		<clr-icon size="16" shape="arrow" [attr.dir]="event.outgoing ? 'left':'right'"></clr-icon>
+		<span class="data">{{ event.data }}</span>
+	  </li>
+	</ul>
+
+	<div>
+		<button id="sendCommandButton" type="button" class="btn btn-icon" aria-label="send" (click)="sendCommand()" [disabled]="pendingCommandTag !== undefined || !commandToSend">
+			<clr-icon dir="right" shape="circle-arrow"></clr-icon>
+		</button>
+		<clr-input-container>
+			<span class="spinner spinner-inline" [style.visibility]="(pendingCommandTag !== undefined) ? 'visible' : 'hidden'"></span>
+			<input class="clr-col-12 clr-col-md-10" clrInput placeholder="G-Code..." name="input" [(ngModel)]="commandToSend" (keyup.enter)="sendCommand()" [disabled]="pendingCommandTag !== undefined" />
+		</clr-input-container>
+	</div>
+  </div>
+  

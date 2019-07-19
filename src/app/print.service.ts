@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {Printer, DiscoveredPrinter, PrinterTemperature, PrinterTemperatures, TemperaturePoint} from './Printer';
+import {Printer, DiscoveredPrinter, PrinterTemperature, PrinterTemperatures, TemperaturePoint, GCodeEvent} from './Printer';
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 import 'rxjs/add/operator/map';
@@ -121,6 +121,21 @@ export class PrintService {
 
         let req = new HttpRequest('PUT', '/api/v1/printers/' + printer.id + '/job', data);
         return this.http.request(req);
+    }
+
+    gcodeHistory(printer: Printer) : Observable<GCodeEvent[]> {
+        return this.http.get<GCodeEvent[]>('/api/v1/printers/' + printer.id + '/gcode');
+    }
+
+    submitGcode(printer: Printer, command: string): Observable<string> {
+        return this.http.post<object>('/api/v1/printers/' + printer.id + '/gcode', command)
+            .map(resp => {
+                return resp['tag'];
+            });
+    }
+
+    resetPrinter(printer: Printer) {
+        this.http.post('/api/v1/printers/' + printer.id + '/reset', '');
     }
 
 }

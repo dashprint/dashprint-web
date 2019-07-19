@@ -32,3 +32,10 @@ export class TemperaturePoint {
     when: Date;
     values: PrinterTemperatures;
 }
+
+export class GCodeEvent {
+    commandId: number;
+    outgoing: boolean;
+    data: string;
+    tag: string;
+}

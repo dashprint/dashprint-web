@@ -229,6 +229,10 @@ export class AppComponent implements OnInit, AfterViewInit {
         .subscribe(x => { this.runningEnableDisable = false; });
   }
 
+  resetPrinter(printer: Printer) {
+    this.printService.resetPrinter(printer);
+  }
+
   editPrinter(printer: Printer) {
     // TODO
     this.showErrorMessage("Not implemented :-(");

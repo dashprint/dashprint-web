@@ -29,6 +29,7 @@ import { AuthenticationInterceptor } from 'src/AuthenticationInterceptor';
 import { SettingsPopupComponent } from './settings-popup/settings-popup.component';
 import { CameraService } from './camera.service';
 import { CameraComponent } from './camera/camera.component';
+import { GCodeHistoryComponent } from './gcode-history/gcode-history.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { CameraComponent } from './camera/camera.component';
     PromptPopupComponent,
     LoginPopupComponent,
     SettingsPopupComponent,
-    CameraComponent
+    CameraComponent,
+    GCodeHistoryComponent
   ],
   imports: [
     BrowserModule,

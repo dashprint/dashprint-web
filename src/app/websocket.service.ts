@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {Printer, PrinterTemperatures} from "./Printer";
+import {Printer, PrinterTemperatures, GCodeEvent} from "./Printer";
 import { Observable } from 'rxjs/Observable';
 import { PrintJob } from './PrintJob';
 import { AuthenticationService } from './authentication.service';
@@ -96,6 +96,20 @@ export class WebsocketService {
               this.doUnsubscribe("Printer." + printer.id + ".temperature", handler);
           };
       });
+  }
+
+  public subscribeToGCodeEvents(printer: Printer) : Observable<GCodeEvent> {
+    return Observable.create((observer) => {
+        let handler = (event: GCodeEvent) => {
+            observer.next(event);
+        };
+
+        this.doSubscribe("Printer." + printer.id + ".gcode", handler);
+
+        return () => {
+            this.doUnsubscribe("Printer." + printer.id + ".gcode", handler);
+        };
+    });
   }
 
   private doSubscribe(what, handler) {

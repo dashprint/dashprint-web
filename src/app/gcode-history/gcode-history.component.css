@@ -1,0 +1,47 @@
+.gcode-events {
+	height: 400px;
+	overflow-y: scroll;
+}
+
+.gcode-events li {
+	list-style-type: none;
+}
+
+.gcode-event .data {
+	font-family: monospace;
+}
+
+.gcode-event.outgoing .data {
+	font-weight: bold;
+}
+
+.gcode-event.tagged {
+	background-color: #E6FFE6;
+}
+
+.gcode-event:hover {
+	background-color: #eee;
+}
+
+/*
+.clr-form-control, clr-input-container {
+	display: inline-block !important;
+}
+*/
+
+.gcode-event .separator {
+	height: 1px;
+	border-bottom: 1px dotted gray;
+}
+
+button {
+	margin-left: 1ex;
+}
+
+.spinner {
+	float: right;
+}
+
+#sendCommandButton {
+	float: right;
+}

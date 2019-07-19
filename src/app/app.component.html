@@ -55,12 +55,13 @@
       </h2>
 
       <div class="btn-group btn-primary">
-        <button *ngIf="selectedPrinter.stopped" (click)="startStopPrinter(selectedPrinter, true)" [disabled]="runningEnableDisable" class="btn btn-success">Enable</button>
+        <button *ngIf="selectedPrinter.stopped && selectedPrinter.state !== 'Error'" (click)="startStopPrinter(selectedPrinter, true)" [disabled]="runningEnableDisable" class="btn btn-success">Enable</button>
         <button *ngIf="!selectedPrinter.stopped" (click)="startStopPrinter(selectedPrinter, false)" [disabled]="runningEnableDisable" class="btn btn-warning">Disable</button>
+        <button *ngIf="selectedPrinter.state == 'Error'" (click)="resetPrinter(selectedPrinter)" class="btn btn-danger-outline">Reset</button>
         <button (click)="editPrinter(selectedPrinter)" class="btn btn-outline">Edit</button>
       </div>
 
-      <div *ngIf="selectedPrinter">
+      <div class="cards" *ngIf="selectedPrinter">
         <div class="printer-temperatures card">
           <div class="card-header">Temperatures</div>
           <app-temperatures #temperaturesComponent [printer]="selectedPrinter"></app-temperatures>
@@ -76,12 +77,21 @@
             <app-file-manager #fileManagerComponent (filePrinted)="onFilePrinted($event)" (error)="showErrorMessage($event)"></app-file-manager>
         </div>
 
-        <div class="file-manager card">
+        <div class="camera card">
           <div class="card-header">Camera</div>
           <app-camera #cameraComponent>
-            <div no-camera>No camera set.</div>
-            <div with-camera></div>
+            <div no-camera>No camera configured for this printer.</div>
+            <span with-camera>
+                <button type="button" class="btn btn-icon" aria-label="cog" (click)="selectCameraForPrinter()">
+                  <clr-icon shape="cog" class="is-solid"></clr-icon>
+                </button>
+            </span>
           </app-camera>
+        </div>
+
+        <div class="gcode-history card">
+          <div class="card-header">G-Code Traffic</div>
+          <app-gcode-history [printer]="selectedPrinter" #gcodeHistoryComponent></app-gcode-history>
         </div>
       </div>
     </main>

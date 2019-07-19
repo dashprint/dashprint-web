@@ -1,9 +1,23 @@
 <div class="camera">
 	<ng-template [ngIf]="camera">
-		<video #videoPlayer (dblclick)="toggleFullscreen()" autoplay>
+		<div id="spinner" [style.visibility]="(showSpinner && videoUrl) ? 'visible' : 'hidden'">
+			<span class="spinner">
+				Loading...
+			</span>
+		</div>
+		<video #videoPlayer *ngIf="videoUrl" (dblclick)="toggleFullscreen()" autoplay
+			(ended)="videoEnded()" (error)="videoError()" (loadeddata)="loadedData()" (waiting)="videoWaiting()">
 			<source src="{{videoUrl}}" type="video/mp4" />
 		</video>
-		<ng-content select="[with-camera]"></ng-content>
+		<div class="controls">
+			<button type="button" class="btn btn-icon" aria-label="play" (click)="start()" [disabled]="!!videoUrl">
+				<clr-icon shape="play" class="is-solid"></clr-icon>
+			</button>
+			<button type="button" class="btn btn-icon" aria-label="stop" (click)="stop()" [disabled]="!videoUrl">
+				<clr-icon shape="stop" class="is-solid"></clr-icon>
+			</button>
+			<ng-content select="[with-camera]"></ng-content>
+		</div>
 	</ng-template>
 
 	<ng-content *ngIf="!camera" select="[no-camera]"></ng-content>

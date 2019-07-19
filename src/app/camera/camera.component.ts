@@ -9,6 +9,7 @@ import { Camera, CameraService } from '../camera.service';
 export class CameraComponent implements OnInit {
   private _camera: Camera;
   private videoUrl: string;
+  private showSpinner: boolean = false;
 
   @ViewChild('videoPlayer', {static: false}) videoPlayer: ElementRef<HTMLVideoElement>;
 
@@ -24,10 +25,7 @@ export class CameraComponent implements OnInit {
   @Input()
   set camera(camera: Camera) {
     this._camera = camera;
-    this.videoUrl = this.cameraService.cameraUrl(camera.id);
-
-    if (this.videoPlayer)
-      this.videoPlayer.nativeElement.play();
+    this.start();
   }
 
   toggleFullscreen() {
@@ -41,6 +39,36 @@ export class CameraComponent implements OnInit {
       this.videoUrl = this.cameraService.cameraUrl(this.camera.id);
       this.videoPlayer.nativeElement.play();
     }
+  }
+
+  loadedData() {
+    this.showSpinner = false;
+  }
+
+  videoWaiting() {
+    this.showSpinner = true;
+  }
+
+  videoEnded() {
+    this.videoUrl = null;
+  }
+
+  videoError() {
+    this.videoUrl = null;
+  }
+
+  public stop() {
+    if (this.videoPlayer)
+      this.videoPlayer.nativeElement.pause();
+    this.videoUrl = null;
+  }
+
+  public start() {
+    this.showSpinner = true;
+    this.videoUrl = this.cameraService.cameraUrl(this.camera.id);
+
+    if (this.videoPlayer)
+      this.videoPlayer.nativeElement.play();
   }
 
 }

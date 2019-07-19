@@ -3,6 +3,13 @@
     padding-top: 4ex;
 }
 
+.cards {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
 .printer-switch {
     float: right;
 }
@@ -24,7 +31,7 @@
 }
 
 .card {
-    float: left;
+    /*float: left;*/
     margin-right: 1rem;
     max-width: 500px;
 }
