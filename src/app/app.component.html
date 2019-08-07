@@ -51,7 +51,8 @@
 
         <span *ngIf="selectedPrinter.connected" class="label label-success">Connected</span>
         <span *ngIf="selectedPrinter.stopped" class="label label-warning">Disabled</span>
-        <span *ngIf="!selectedPrinter.stopped && !selectedPrinter.connected" class="label label-danger">Disconnected</span>
+        <span *ngIf="selectedPrinter.state === 'Initializing' || selectedPrinter.state === 'Disconnected'" class="label label-danger">Disconnected</span>
+        <span *ngIf="selectedPrinter.state === 'Error'" class="label label-danger">Error</span>
       </h2>
 
       <div class="btn-group btn-primary">

@@ -103,7 +103,7 @@ export class PrintService {
     getPrintJob(printer: Printer) : Observable<PrintJob> {
         return this.http.get<PrintJob>('/api/v1/printers/' + printer.id + '/job', { observe: 'response' }).catch(err => {
             return of(null);
-        });
+        }).map(resp => resp ? resp.body : null);
     }
 
     printFile(printer: Printer, file: string) : Observable<HttpEvent<any>> {

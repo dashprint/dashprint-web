@@ -15,6 +15,7 @@
 			<span class="spinner spinner-inline" [style.visibility]="(pendingCommandTag !== undefined) ? 'visible' : 'hidden'"></span>
 			<input class="clr-col-12 clr-col-md-10" clrInput placeholder="G-Code..." name="input" [(ngModel)]="commandToSend" (keyup.enter)="sendCommand()" [disabled]="pendingCommandTag !== undefined" />
 		</clr-input-container>
+		<div style="clear: right"></div>
 	</div>
   </div>
   

@@ -10,6 +10,7 @@ export class Printer {
     width: number;
     height: number;
     depth: number;
+    state: string;
 }
 
 export class DiscoveredPrinter {

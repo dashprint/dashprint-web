@@ -55,13 +55,18 @@ export class GCodeHistoryComponent implements OnInit {
 
         if (this.gcodeEvents.length > MAX_EVENTS) {
           let first = this.gcodeEvents[0];
-          do {
+
+          if (first.commandId !== this.gcodeEvents[this.gcodeEvents.length-1].commandId) {
+            do {
+              this.gcodeEvents.splice(0, 1);
+            } while (this.gcodeEvents.length > 0 && this.gcodeEvents[0].commandId == first.commandId);
+          } else {
             this.gcodeEvents.splice(0, 1);
-          } while (this.gcodeEvents.length > 0 && this.gcodeEvents[0].commandId == first.commandId);
+          }
         }
 
         // If we're scrolled to the bottom, let's stay at the bottom
-        if (this.gcodeListElement.nativeElement.scrollTop = this.gcodeListElement.nativeElement.scrollHeight)
+        if (this.gcodeListElement.nativeElement.scrollTop == this.gcodeListElement.nativeElement.scrollHeight)
           window.setTimeout(() => this.scrollToBottom(), 100);
       });
     } else {

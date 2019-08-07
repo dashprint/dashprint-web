@@ -42,6 +42,12 @@ export class GcodeFilePreviewComponent extends Modal implements OnInit {
 
     this.downloadSubscription = this.fileService.downloadFile(file).subscribe((event) => {
       switch(event.type) {
+        case HttpEventType.ResponseHeader:
+          if (!event.ok) {
+            alert("Failed to download GCODE file!");
+            this.hide();
+          }
+          break;
         case HttpEventType.Response:
           
           this.downloadSubscription = null;

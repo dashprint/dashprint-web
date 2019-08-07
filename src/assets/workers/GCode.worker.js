@@ -36,7 +36,7 @@ function analyzeGcode(reqId, data) {
 	}
 
 	if (pos < data.length)
-		processGcodeLine(result, state, data.substr(pos));
+		processGcodeLine(result, state, pos, data.substr(pos));
 	
 	postMessage([reqId, result]);
 }
