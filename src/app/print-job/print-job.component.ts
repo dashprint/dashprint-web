@@ -48,11 +48,11 @@ export class PrintJobComponent implements OnInit {
     if (this.printer) {
       this.printService.getPrintJob(this.printer).subscribe((printJob) => {
         this.printJob = printJob;
-      });
 
-      // Subscribe to job events
-      this.printJobSubscription = this.websocketService.subscribeToPrinterJobs(this.printer, this.printJob).subscribe(printJob => {
-        this.printJob = printJob;
+        // Subscribe to job events
+        this.printJobSubscription = this.websocketService.subscribeToPrinterJobs(this.printer, this.printJob).subscribe(printJob => {
+          this.printJob = printJob;
+        });
       });
     } else {
       this.printJob = null;
