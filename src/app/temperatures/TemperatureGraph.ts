@@ -194,10 +194,7 @@ export class TemperatureGraph {
 			if (timeDiff > GRAPH_MINUTES)
 				break;
 
-			if (!point.values[key])
-				continue;
-
-			let temp = point.values[key].current;
+			let temp = point.values[key] ? point.values[key].current : 0;
 
 			let x = graphX + graphWidth - graphWidth/GRAPH_MINUTES*timeDiff;
 			let y = graphY + graphHeight - graphHeight/maxTemp*temp;

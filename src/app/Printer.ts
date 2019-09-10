@@ -11,6 +11,7 @@ export class Printer {
     height: number;
     depth: number;
     state: string;
+    errorMessage: string;
 }
 
 export class DiscoveredPrinter {

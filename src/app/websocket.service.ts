@@ -112,6 +112,20 @@ export class WebsocketService {
     });
   }
 
+  public subscribeToFileManagerEvents() : Observable<void> {
+      return Observable.create(observer => {
+        let handler = () => {
+            observer.next();
+        };
+
+        this.doSubscribe("FileManager.change", handler);
+
+        return () => {
+            this.doUnsubscribe("FileManager.change", handler);
+        };
+      });
+  }
+
   private doSubscribe(what, handler) {
     if (this.socket.readyState != WebSocket.OPEN) {
       this.pendingOperations.push(() => this.doSubscribe(what, handler));

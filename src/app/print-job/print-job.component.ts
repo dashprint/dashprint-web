@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { Printer } from '../Printer';
 import { PrintService } from '../print.service';
 import { WebsocketService } from "../websocket.service";
@@ -15,6 +15,8 @@ export class PrintJobComponent implements OnInit {
   _printer: Printer;
   printJob: PrintJob;
   printJobSubscription: Subscription;
+
+  @ViewChild('gcodePreview', {static: false}) gcodePreview: ElementRef;
 
   @Output() error = new EventEmitter<string>();
 

@@ -46,6 +46,14 @@
 
       <div class="modal-backdrop" *ngIf="dragOver"><div id="fileupload-notif">Drop a GCODE file</div></div>
 
+      <clr-alert class="printer-error" [clrAlertType]="'warning'" [clrAlertClosable]="false" [clrAlertSizeSmall]="true" *ngIf="selectedPrinter.errorMessage">
+        <clr-alert-item>
+            <span class="alert-text">
+              {{ selectedPrinter.errorMessage }}
+            </span>
+        </clr-alert-item>
+      </clr-alert>
+
       <h2>
         {{ selectedPrinter.name }}
 

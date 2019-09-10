@@ -6,7 +6,7 @@
 			</span>
 		</div>
 		<video #videoPlayer *ngIf="videoUrl" (dblclick)="toggleFullscreen()" autoplay
-			(ended)="videoEnded()" (error)="videoError()" (loadeddata)="loadedData()" (waiting)="videoWaiting()">
+			(ended)="videoEnded()" (error)="videoError()" (loadeddata)="loadedData()" (waiting)="videoWaiting()" (playing)="loadedData()">
 			<source src="{{videoUrl}}" type="video/mp4" />
 		</video>
 		<div class="controls">

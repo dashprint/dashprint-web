@@ -17,3 +17,7 @@
     float: right;
     margin-top: 1rem;
 }
+
+canvas {
+    max-width: 90%;
+}

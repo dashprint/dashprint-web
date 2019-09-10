@@ -31,6 +31,8 @@ export class PrintService {
               printer.width = data[key].width;
               printer.height = data[key].height;
               printer.depth = data[key].depth;
+              printer.state = data[key].state;
+              printer.errorMessage = data[key].errorMessage;
               rv.push(printer);
           });
 
