@@ -30,6 +30,7 @@ import { SettingsPopupComponent } from './settings-popup/settings-popup.componen
 import { CameraService } from './camera.service';
 import { CameraComponent } from './camera/camera.component';
 import { GCodeHistoryComponent } from './gcode-history/gcode-history.component';
+import { GcodeViewerComponent } from './gcode-viewer/gcode-viewer.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +48,8 @@ import { GCodeHistoryComponent } from './gcode-history/gcode-history.component';
     LoginPopupComponent,
     SettingsPopupComponent,
     CameraComponent,
-    GCodeHistoryComponent
+    GCodeHistoryComponent,
+    GcodeViewerComponent
   ],
   imports: [
     BrowserModule,

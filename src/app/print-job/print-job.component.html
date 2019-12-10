@@ -21,7 +21,7 @@
         <clr-accordion-title>Progress Preview</clr-accordion-title>
 
         <clr-accordion-content *clrIfExpanded>
-          <canvas #gcodePreview id="gcodePreview" width="300" height="300"></canvas>
+          <app-gcode-viewer width="300" height="300" [source]="printJob.name" [printProgress]="printJob.done" #gcodeViewer></app-gcode-viewer>
         </clr-accordion-content>
       </clr-accordion-panel>
       </clr-accordion>

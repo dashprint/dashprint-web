@@ -137,7 +137,7 @@ export class PrintService {
     }
 
     resetPrinter(printer: Printer) {
-        this.http.post('/api/v1/printers/' + printer.id + '/reset', '');
+        this.http.post('/api/v1/printers/' + printer.id + '/reset', '').subscribe(() => {});
     }
 
 }

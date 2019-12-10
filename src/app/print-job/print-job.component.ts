@@ -5,6 +5,7 @@ import { WebsocketService } from "../websocket.service";
 import { PrintJob } from '../PrintJob';
 import { Subscription } from 'rxjs/Subscription';
 import { HttpEventType } from '@angular/common/http';
+import { GcodeViewerComponent } from '../gcode-viewer/gcode-viewer.component';
 
 @Component({
   selector: 'app-print-job',
@@ -16,7 +17,7 @@ export class PrintJobComponent implements OnInit {
   printJob: PrintJob;
   printJobSubscription: Subscription;
 
-  @ViewChild('gcodePreview', {static: false}) gcodePreview: ElementRef;
+  @ViewChild('gcodeViewer', {static: false}) gcodeViewer: GcodeViewerComponent;
 
   @Output() error = new EventEmitter<string>();
 

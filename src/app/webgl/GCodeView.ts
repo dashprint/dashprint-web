@@ -11,6 +11,7 @@ export class GCodeView extends GLView {
 	private gcode: AnalyzedGCode = null;
 	private layers: RenderableLayer[];
 	private axes: Lines;
+	printProgress: number = null;
 
 	constructor(canvas: HTMLCanvasElement) {
 		super(canvas);
@@ -65,7 +66,38 @@ export class GCodeView extends GLView {
 			console.debug("Segment count: " + segmentCount);
 		}
 
+		if (this.printProgress)
+			this.setPrintProgress(this.printProgress);
+
 		this.requestRender();
+	}
+
+	public setPrintProgress(progress: number): number {
+		let rv;
+		this.printProgress = progress;
+
+		if (this.layers) {
+			for (let i = 0; i < this.layers.length; i++) {
+				let layer = this.layers[i];
+
+				if (layer.layer.gcodeOffsets && layer.layer.gcodeOffsets.length > 0) {
+					if (layer.layer.gcodeOffsets[layer.layer.gcodeOffsets.length-1] < progress) {
+						// Layer done
+						layer.color = new Float32Array([0.3, 0.3, 1, 1]);
+					} else if (layer.layer.gcodeOffsets[0] > progress) {
+						// Future layer
+						layer.color = new Float32Array([0.3, 0.3, 0.3, 0.05]);
+					} else {
+						// Current layer
+						layer.color = new Float32Array([1, 0.3, 0.3, 0.75]);
+						rv = i;
+					}
+				}
+			}
+
+			this.requestRender();
+		}
+		return rv;
 	}
 }
 
@@ -90,7 +122,7 @@ class RenderableLayer extends Renderable {
 
 	public color: Float32Array = new Float32Array([0.3, 0.3, 1, 1]);
 
-	constructor(private layer: GCodeLayer, private thickness: number) {
+	constructor(public layer: GCodeLayer, private thickness: number) {
 		super();
 
 		let separateExtrusionCount = this.countSeparateExtrusions();

@@ -1,0 +1,7 @@
+progress {
+	width: 100%;
+}
+
+#gcodePreview {
+	outline: #ccc 1px solid;
+}

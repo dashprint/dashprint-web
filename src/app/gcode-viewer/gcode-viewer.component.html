@@ -1,0 +1,9 @@
+<div *ngIf="loading">
+	<p>Downloading...</p>
+	<p><progress max="100" [value]="downloadProgress" [attr.data-displayval]="downloadProgress + '%'"></progress></p>
+</div>
+<div [hidden]="loading || !fileData">
+	<ng-content select="[toolbar]"></ng-content>
+	<!-- Visual GCode preview -->
+	<canvas #gcodePreview id="gcodePreview" width="{{ width }}" height="{{ height }}"></canvas>
+</div>

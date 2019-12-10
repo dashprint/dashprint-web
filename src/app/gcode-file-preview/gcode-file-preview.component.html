@@ -1,25 +1,20 @@
 <clr-modal [(clrModalOpen)]="visible" [clrModalSize]="'lg'">
     <h3 class="modal-title" *ngIf="file">GCode Preview: {{ file.name }}</h3>
     <div class="modal-body">
-        <div *ngIf="loading">
-          <p>Downloading...</p>
-          <p><progress max="100" [value]="downloadProgress" [attr.data-displayval]="downloadProgress + '%'"></progress></p>
+      <app-gcode-viewer #gcodeViewer width="750" height="400">
+        <div toolbar>
+            <button class="btn" (click)="saveFile()"><clr-icon shape="download"></clr-icon> Save</button>
+            <table>
+              <tr><th>Layer count</th><td *ngIf="analyzedGcode">{{ analyzedGcode.layers.length }}</td></tr>
+              <tr>
+                <th>Print time</th>
+                <td *ngIf="(analyzedGcode && analyzedGcode.estimatedTime > 0); then showTime else noTime"></td>
+                <ng-template #showTime>{{ analyzedGcode.estimatedTime | duration }}</ng-template>
+                <ng-template #noTime>?</ng-template>
+              </tr>
+            </table>
         </div>
-        <div [hidden]="loading || !fileData">
-          <button class="btn" (click)="saveFile()"><clr-icon shape="download"></clr-icon> Save</button>
-          <table>
-            <tr><th>Layer count</th><td *ngIf="analyzedGcode">{{ analyzedGcode.layers.length }}</td></tr>
-            <tr>
-              <th>Print time</th>
-              <td *ngIf="(analyzedGcode && analyzedGcode.estimatedTime > 0); then showTime else noTime"></td>
-              <ng-template #showTime>{{ analyzedGcode.estimatedTime | duration }}</ng-template>
-              <ng-template #noTime>?</ng-template>
-            </tr>
-          </table>
-        
-          <!-- Visual GCode preview -->
-          <canvas #gcodePreview id="gcodePreview" width="750" height="400"></canvas>
-        </div>
+      </app-gcode-viewer>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="hide()">Close</button>

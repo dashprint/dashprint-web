@@ -1,11 +1,3 @@
-progress {
-	width: 100%;
-}
-
-#gcodePreview {
-	outline: #ccc 1px solid;
-}
-
 h3 {
 	white-space: nowrap;
 	overflow: hidden;
